@@ -1,14 +1,9 @@
-<?php
-/**
- * Template Name: Landing Tenerife
- * Template Post Type: page
- */
-?><!DOCTYPE html>
-<html <?php language_attributes(); ?>>
+<!DOCTYPE html>
+<html lang="fr">
 <head>
-<meta charset="<?php bloginfo( 'charset' ); ?>">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?php wp_title( '|', true, 'right' ); ?><?php bloginfo( 'name' ); ?></title>
+<title>Guide Tenerife | Canarias Lovers</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600&family=Meow+Script&display=swap" rel="stylesheet">
 <style>
@@ -1025,7 +1020,6 @@
     .price-box { min-width: unset; width: 100%; }
     footer { flex-direction: column; text-align: center; }
     section { padding-left: 20px !important; padding-right: 20px !important; }
-    /* Engagements responsive */
     section > div > div[style*="grid-template-columns: 1fr 1fr"] {
       grid-template-columns: 1fr !important;
       gap: 40px !important;
@@ -1037,15 +1031,13 @@
     .hero-title { font-size: 36px; }
   }
 </style>
-<?php wp_head(); ?>
 </head>
-<body <?php body_class('landing-no-theme'); ?>>
-<?php wp_body_open(); ?>
+<body class="landing-no-theme">
 
 <!-- NAV -->
 <nav>
   <a href="#" class="nav-logo">
-    <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/logo-canarias-lovers.png' ); ?>" alt="Canarias Lovers" class="nav-logo-img" width="340" height="44" loading="eager" decoding="async">
+    <img src="assets/logo-canarias-lovers.png" alt="Canarias Lovers" class="nav-logo-img" width="340" height="44" loading="eager" decoding="async">
   </a>
   <a href="#acheter" class="nav-cta">Obtenir le guide</a>
 </nav>
@@ -1057,7 +1049,7 @@
   <div class="cover-wrap">
     <div class="cover-card">
       <div class="cover-visual">
-        <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/cover-tenerife.png' ); ?>" alt="Couverture du guide Tenerife — Choisir, comprendre, explorer" width="400" height="560" loading="eager" decoding="async">
+        <img src="assets/cover-tenerife.png" alt="Couverture du guide Tenerife — Choisir, comprendre, explorer" width="400" height="560" loading="eager" decoding="async">
       </div>
     </div>
     <div class="cover-badge">+15 000 vendus</div>
@@ -1125,13 +1117,13 @@
     </div>
     <div class="pages-stack">
       <div class="page-mock page-mock-1">
-        <img class="page-mock-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/guide-preview-eglise.png' ); ?>" alt="Extrait du guide : Église Notre-Dame de la Conception" width="400" height="620" loading="lazy" decoding="async">
+        <img class="page-mock-img" src="assets/guide-preview-eglise.png" alt="Extrait du guide : Église Notre-Dame de la Conception" width="400" height="620" loading="lazy" decoding="async">
       </div>
       <div class="page-mock page-mock-2">
-        <img class="page-mock-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/guide-preview-teide.png' ); ?>" alt="Extrait du guide : Parc national du Teide" width="400" height="620" loading="lazy" decoding="async">
+        <img class="page-mock-img" src="assets/guide-preview-teide.png" alt="Extrait du guide : Parc national du Teide" width="400" height="620" loading="lazy" decoding="async">
       </div>
       <div class="page-mock page-mock-3">
-        <img class="page-mock-img" src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/guide-preview-volcaniques.png' ); ?>" alt="Extrait du guide : Découvertes volcaniques" width="400" height="620" loading="lazy" decoding="async">
+        <img class="page-mock-img" src="assets/guide-preview-volcaniques.png" alt="Extrait du guide : Découvertes volcaniques" width="400" height="620" loading="lazy" decoding="async">
       </div>
     </div>
   </div>
@@ -1339,10 +1331,7 @@
 <!-- TERRAIN & ENGAGEMENTS -->
 <section style="background: var(--white); padding: 100px 40px;">
   <div style="max-width: 900px; margin: 0 auto;">
-
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: start;">
-
-      <!-- Gauche : le problème IA -->
       <div>
         <div class="section-tag tag-navy-outline">Nos engagements</div>
         <h2 class="section-title section-title-md" style="margin-bottom: 18px; color: var(--navy);">
@@ -1354,8 +1343,6 @@
         <p style="font-size: 15px; color: var(--grey-text); line-height: 1.85; font-weight: 300;">
           Pas de contenu généré, pas d'informations recyclées. Un regard humain, de terrain, 100% indépendant.
         </p>
-
-        <!-- Signature -->
         <div style="margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--grey); display: flex; align-items: center; gap: 16px;">
           <div>
             <div style="font-family: 'Meow Script', cursive; font-size: 26px; color: var(--yellow); line-height: 1.2;">Claire &amp; Manu</div>
@@ -1363,13 +1350,10 @@
           </div>
         </div>
       </div>
-
-      <!-- Droite : les engagements clés -->
       <div>
         <div style="background: var(--off-white); border-radius: 16px; padding: 32px; border: 1px solid rgba(25,30,85,0.07);">
           <div style="font-family: 'Raleway', sans-serif; font-size: 12px; font-weight: 800; color: var(--yellow); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 22px;">Nos 10 engagements</div>
           <div style="display: flex; flex-direction: column; gap: 14px;">
-
             <div style="display: flex; gap: 14px; align-items: flex-start;">
               <span style="font-family: 'Raleway', sans-serif; font-weight: 900; font-size: 13px; color: var(--yellow); flex-shrink: 0; margin-top: 1px;">01</span>
               <span style="font-size: 13.5px; color: var(--navy); font-weight: 400; line-height: 1.5;">Visiter tous les lieux dont nous vous parlons.</span>
@@ -1397,7 +1381,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </section>
@@ -1437,7 +1420,6 @@
 </footer>
 
 <script>
-  // Scroll reveal
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
@@ -1457,6 +1439,5 @@
   });
 </script>
 
-<?php wp_footer(); ?>
 </body>
 </html>
