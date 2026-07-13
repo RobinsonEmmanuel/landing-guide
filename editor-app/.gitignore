@@ -1,0 +1,6 @@
+node_modules
+.next
+out
+.env.local
+public/landing-editor.html
+next-env.d.ts

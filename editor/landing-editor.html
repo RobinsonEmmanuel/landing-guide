@@ -1,0 +1,3052 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Éditeur Landing Guide — Region Lovers</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; }
+  body { display: flex; flex-direction: column; background: #f4f5f8; color: #191E55; }
+
+  .topbar {
+    background: #191E55;
+    color: #fff;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .topbar h1 { font-size: 15px; margin: 0; font-weight: 700; color: #B68207; text-transform: uppercase; letter-spacing: .04em; }
+  .topbar select, .topbar button {
+    font: inherit; font-size: 13px; padding: 7px 12px; border-radius: 6px; border: none; cursor: pointer;
+  }
+  .topbar select { background: #2d3490; color: #fff; }
+  .topbar button { background: rgba(255,255,255,0.12); color: #fff; }
+  .topbar button:hover { background: rgba(255,255,255,0.22); }
+  .topbar .spacer { flex: 1; }
+  #export-btn { background: #B68207 !important; color: #191E55 !important; font-weight: 700; }
+  #export-btn:hover { background: #c8930f !important; }
+  #publish-btn { background: #2e7d32 !important; color: #fff !important; font-weight: 700; }
+  #publish-btn:hover { background: #388e3c !important; }
+  #export-status { font-size: 12px; color: #CCD3DD; max-width: 320px; }
+  .sync-status { font-size: 12px; color: #B68207; font-style: italic; }
+
+  .main { flex: 1; display: flex; min-height: 0; }
+
+  .sidebar { width: 420px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e4ea; display: flex; flex-direction: column; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px; border-bottom: 1px solid #e2e4ea; background: #fafafd; }
+  .tab-btn {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em;
+    padding: 6px 10px; border-radius: 20px; border: 1px solid #d5d8e2; background: #fff; color: #4a5168; cursor: pointer;
+  }
+  .tab-btn.active { background: #191E55; color: #fff; border-color: #191E55; }
+
+  #form { flex: 1; overflow-y: auto; padding: 16px; }
+  .field-group { margin-bottom: 22px; }
+  .field-group h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #B68207; margin: 0 0 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+  .field-row { display: block; margin-bottom: 12px; }
+  .field-label { display: block; font-size: 12px; color: #4a5168; margin-bottom: 4px; }
+  .field-note { font-size: 12px; color: #8a6200; background: #FBF3DF; padding: 8px 12px; border-radius: 6px; margin: 0 0 14px; line-height: 1.5; }
+  .field-row input[type=text], .field-row input[type=url], .field-row textarea {
+    width: 100%; font: inherit; font-size: 13px; padding: 8px 10px; border: 1px solid #d5d8e2; border-radius: 6px; resize: vertical;
+  }
+  .field-row textarea { min-height: 60px; }
+  .field-row input:focus, .field-row textarea:focus { outline: 2px solid #B68207; border-color: #B68207; }
+
+  .image-field { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .image-preview { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; border: 1px solid #d5d8e2; background: #f0f0f4; }
+  .image-status { font-size: 11px; color: #B68207; font-style: italic; }
+  .btn-clear { font-size: 11px; padding: 4px 8px; border-radius: 6px; border: 1px solid #d5d8e2; background: #fff; cursor: pointer; }
+
+  .preview-wrap { flex: 1; overflow: auto; background: #ddd; padding: 20px; display: flex; justify-content: center; }
+  #preview-frame { width: 100%; max-width: 1400px; height: 900px; border: none; background: #fff; box-shadow: 0 0 30px rgba(0,0,0,0.15); }
+
+  /* ---- Volet Mode d'emploi ---- */
+  #guide-toggle {
+    position: fixed; top: 50%; right: 0; transform: translateY(-50%);
+    z-index: 20;
+    background: #191E55; color: #B68207; border: none; cursor: pointer;
+    padding: 14px 8px; border-radius: 8px 0 0 8px; font-size: 12px; font-weight: 700;
+    writing-mode: vertical-rl; text-transform: uppercase; letter-spacing: .05em;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.15);
+  }
+  #guide-toggle:hover { background: #2d3490; }
+
+  #guide-panel {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 420px; max-width: 90vw;
+    background: #fff; border-left: 1px solid #e2e4ea; z-index: 19;
+    transform: translateX(100%); transition: transform 0.25s ease;
+    display: flex; flex-direction: column; box-shadow: -6px 0 24px rgba(0,0,0,0.15);
+  }
+  #guide-panel.open { transform: translateX(0); }
+
+  .guide-header {
+    background: #191E55; color: #fff; padding: 16px 20px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .guide-header h2 { font-size: 15px; margin: 0; color: #B68207; text-transform: uppercase; letter-spacing: .04em; }
+  .guide-close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+
+  #guide-body { flex: 1; overflow-y: auto; padding: 18px 20px; }
+
+  .guide-step { display: flex; gap: 12px; margin-bottom: 22px; }
+  .guide-step-num {
+    flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%; background: #191E55; color: #B68207;
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .guide-step-body h4 { margin: 0 0 6px; font-size: 13px; color: #191E55; }
+  .guide-step-body p { margin: 0 0 8px; font-size: 12.5px; color: #4a5168; line-height: 1.5; }
+  .guide-step-body ol { margin: 6px 0 8px; padding-left: 18px; font-size: 12.5px; color: #4a5168; line-height: 1.6; }
+  .guide-step-body ol li { margin-bottom: 6px; }
+  .guide-step-body code {
+    background: #f2f2f6; border-radius: 4px; padding: 1px 5px; font-size: 11.5px;
+    font-family: 'Courier New', monospace; display: inline-block; line-height: 1.6;
+  }
+  .guide-note { font-size: 11.5px; color: #8a6200; background: #FBF3DF; padding: 6px 10px; border-radius: 6px; }
+  .guide-checklist { list-style: none; margin: 0; padding: 0; }
+  .guide-checklist li { margin-bottom: 8px; font-size: 12.5px; color: #4a5168; }
+  .guide-checklist label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+
+  @media (max-width: 1000px) {
+    .main { flex-direction: column; }
+    .sidebar { width: 100%; height: 45vh; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Éditeur Landing Guide</h1>
+  <select id="project-select"></select>
+  <button id="new-project-btn">+ Nouveau</button>
+  <button id="duplicate-project-btn">Dupliquer</button>
+  <button id="reset-project-btn">Réinitialiser (contenu Tenerife)</button>
+  <button id="delete-project-btn">Supprimer</button>
+  <span id="sync-status" class="sync-status"></span>
+  <div class="spacer"></div>
+  <span id="export-status"></span>
+  <button id="export-btn">Télécharger le ZIP (fichiers + images)</button>
+  <button id="publish-btn">Publier en ligne</button>
+</div>
+
+<div class="main">
+  <div class="sidebar">
+    <div class="tabs" id="tabs"></div>
+    <div id="form"></div>
+  </div>
+  <div class="preview-wrap">
+    <iframe id="preview-frame" srcdoc="<!doctype html><html><head><meta charset=&quot;utf-8&quot;>
+<link href=&quot;https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&amp;family=Inter:wght@300;400;500;600&amp;family=Meow+Script&amp;display=swap&quot; rel=&quot;stylesheet&quot;>
+<style>  :root {
+    --navy:       #191E55;
+    --navy-mid:   #21277a;
+    --navy-light: #2d3490;
+    --yellow:     #B68207;
+    --yellow-mid: #8a6200;
+    --yellow-deep: #5a4000;
+    --white:      #FFFFFF;
+    --grey:       #CCD3DD;
+    --grey-text:  #4a5168;
+    --off-white:  #f7f6f1;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    background: var(--white);
+    color: var(--navy);
+    overflow-x: hidden;
+  }
+
+  /* ============================
+     NAV
+  ============================ */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 44px;
+    background: rgba(25, 30, 85, 0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+  }
+
+  .nav-logo-img {
+    height: 44px;
+    width: auto;
+    max-width: min(340px, 82vw);
+    display: block;
+    mix-blend-mode: screen;
+  }
+
+  .nav-cta {
+    background: var(--yellow);
+    color: var(--navy);
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    transition: background 0.2s, transform 0.2s;
+  }
+
+  .nav-cta:hover {
+    background: var(--yellow-mid);
+    color: var(--white);
+    transform: translateY(-1px);
+  }
+
+  /* ============================
+     HERO
+  ============================ */
+  .hero {
+    min-height: 100vh;
+    background: var(--navy);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 110px 40px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Grain texture overlay */
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E&quot;);
+    opacity: 0.03;
+    pointer-events: none;
+  }
+
+  /* Halo doré — même intensité que la section pivot */
+  .hero-glow {
+    position: absolute;
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(249, 213, 99, 0.11) 0%, transparent 68%);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Cover mockup */
+  .cover-wrap {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 48px;
+    animation: floatY 5s ease-in-out infinite;
+  }
+
+  @keyframes floatY {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+  }
+
+  .cover-card {
+    width: 240px;
+    background: var(--navy-mid);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow:
+      0 4px 0 rgba(255,255,255,0.05) inset,
+      0 0 0 1px rgba(255,255,255,0.09),
+      0 20px 50px rgba(0, 0, 0, 0.42),
+      0 0 36px rgba(182, 130, 7, 0.45),
+      0 0 72px rgba(249, 213, 99, 0.22),
+      0 0 120px rgba(182, 130, 7, 0.12);
+  }
+
+  /* Largeur fixe sur la carte ; hauteur = proportion réelle du PNG (pas de crop forcé) */
+  .cover-visual {
+    width: 100%;
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .cover-visual img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .cover-badge {
+    position: absolute;
+    top: -12px;
+    right: -16px;
+    background: var(--yellow);
+    color: var(--navy);
+    font-family: 'Raleway', sans-serif;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 5px 10px;
+    border-radius: 50px;
+    white-space: nowrap;
+    box-shadow: 0 4px 14px rgba(249,213,99,0.4);
+  }
+
+  /* Hero text */
+  .hero-kicker {
+    font-family: 'Meow Script', cursive;
+    font-size: 22px;
+    color: var(--yellow);
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.3s forwards;
+  }
+
+  .hero-title {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.5s forwards;
+  }
+
+  .hero-title .dest {
+    display: block;
+    font-size: clamp(28px, 4.8vw, 54px);
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .hero-title em {
+    display: block;
+    font-style: italic;
+    color: var(--yellow);
+    text-transform: none;
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(18px, 2.35vw, 28px);
+    font-weight: 700;
+    margin-top: 6px;
+    line-height: 1.28;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(15px, 1.8vw, 18px);
+    color: rgba(255,255,255,0.88);
+    max-width: 500px;
+    line-height: 1.75;
+    font-weight: 400;
+    margin: 0 auto 40px;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.7s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.9s forwards;
+  }
+
+  .btn-primary {
+    background: var(--yellow);
+    color: var(--navy);
+    padding: 15px 34px;
+    border-radius: 50px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+
+  .btn-primary:hover {
+    background: var(--yellow-mid);
+    color: var(--white);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(182,130,7,0.4);
+  }
+
+  .btn-ghost {
+    border: 1.5px solid rgba(255,255,255,0.28);
+    color: rgba(255,255,255,0.82);
+    padding: 15px 28px;
+    border-radius: 50px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .btn-ghost:hover {
+    border-color: rgba(255,255,255,0.5);
+    color: var(--white);
+  }
+
+  /* Hero stats */
+  .hero-stats {
+    display: flex;
+    gap: 0;
+    margin-top: 60px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 1.1s forwards;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .stat-item {
+    padding: 0 32px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .stat-item:last-child { border-right: none; }
+
+  .stat-num {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    font-size: 30px;
+    color: var(--yellow);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.62);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============================
+     SECTION HELPERS
+  ============================ */
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 50px;
+    margin-bottom: 22px;
+  }
+
+  .tag-yellow {
+    background: var(--yellow);
+    color: var(--navy);
+  }
+
+  .tag-navy-outline {
+    border: 1.5px solid rgba(25,30,85,0.2);
+    color: var(--navy);
+  }
+
+  .tag-white-outline {
+    border: 1.5px solid rgba(255,255,255,0.28);
+    color: rgba(255,255,255,0.88);
+  }
+
+  .section-title {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .section-title-lg {
+    font-size: clamp(26px, 4vw, 48px);
+  }
+
+  .section-title-md {
+    font-size: clamp(22px, 3vw, 38px);
+  }
+
+  .section-title .title-accent-gold {
+    color: var(--yellow);
+  }
+
+  /* Séparateur hero → pivot (même bleu #191E55) */
+  .navy-stack-divider {
+    background: var(--navy);
+    padding: 18px 40px 22px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .navy-stack-divider__line {
+    position: relative;
+    max-width: 520px;
+    margin: 0 auto;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(182, 130, 7, 0.2) 18%,
+      rgba(249, 213, 99, 0.55) 50%,
+      rgba(182, 130, 7, 0.2) 82%,
+      transparent 100%
+    );
+  }
+
+  .navy-stack-divider__gem {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: linear-gradient(145deg, var(--yellow-mid), var(--yellow));
+    border-radius: 1px;
+    box-shadow:
+      0 0 0 5px var(--navy),
+      0 2px 20px rgba(182, 130, 7, 0.35);
+  }
+
+  /* ============================
+     PIVOT (La différence)
+  ============================ */
+  .pivot {
+    background: var(--navy);
+    padding: 48px 40px 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pivot::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url(&quot;data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E&quot;);
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .pivot-glow {
+    position: absolute;
+    width: 520px;
+    height: 520px;
+    background: radial-gradient(circle, rgba(249, 213, 99, 0.11) 0%, transparent 68%);
+    bottom: -140px;
+    right: -90px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .pivot-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 70px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .pivot-lede {
+    font-family: 'Inter', sans-serif;
+    font-size: clamp(14px, 1.5vw, 16px);
+    font-style: italic;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.78);
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .pivot-title {
+    color: var(--white);
+    margin-bottom: 22px;
+    line-height: 1.08;
+  }
+
+  .pivot-title span { color: var(--yellow); }
+
+  .pivot-body {
+    font-size: 16px;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.8;
+    font-weight: 300;
+    margin-bottom: 28px;
+  }
+
+  .pivot-quote {
+    background: rgba(255, 255, 255, 0.07);
+    border-left: 3px solid var(--yellow);
+    padding: 18px 22px;
+    border-radius: 8px;
+  }
+
+  .pivot-quote p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.7;
+    font-style: italic;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .pivot-quote cite {
+    display: block;
+    font-size: 12px;
+    color: var(--yellow);
+    font-style: normal;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 10px;
+  }
+
+  /* Mockup stack — extraits réels du guide */
+  .pages-stack {
+    position: relative;
+    height: 400px;
+  }
+
+  .page-mock {
+    position: absolute;
+    width: 200px;
+    height: 310px;
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .page-mock-1 { left: 0; top: 40px; transform: rotate(-4deg); z-index: 1; }
+  .page-mock-2 { left: 78px; top: 0; z-index: 3; }
+  .page-mock-3 { left: 156px; top: 50px; transform: rotate(4deg); z-index: 1; }
+
+  .page-mock-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+  }
+
+  /* ============================
+     FEUILLETAGE VISUEL
+  ============================ */
+  .feuilletage {
+    background: var(--off-white);
+    padding: 100px 40px;
+    overflow: hidden;
+  }
+
+  .feuilletage-inner {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .feuilletage-intro {
+    font-size: clamp(15px, 1.5vw, 17px);
+    color: var(--navy);
+    font-weight: 400;
+    max-width: 540px;
+    line-height: 1.75;
+    margin-bottom: 48px;
+  }
+
+  .inspi-intro {
+    font-size: clamp(15px, 1.5vw, 17px);
+    color: var(--grey-text);
+    max-width: 500px;
+    font-weight: 400;
+    line-height: 1.75;
+    margin: 0;
+  }
+
+  .feuilletage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+
+  .feuillet-card {
+    background: var(--white);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(25,30,85,0.1);
+  }
+
+  .feuillet-thumb {
+    margin: 0;
+    line-height: 0;
+    background: var(--white);
+  }
+
+  .feuillet-card img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ============================
+     BENEFITS TABLE
+  ============================ */
+  .benefits {
+    background: var(--navy);
+    padding: 100px 40px;
+  }
+
+  .benefits-inner {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  .benefits-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 50px;
+  }
+
+  .benefits-table thead th {
+    padding: 12px 24px;
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .benefits-table thead th:first-child {
+    color: rgba(255,255,255,0.55);
+    text-align: left;
+    width: 42%;
+  }
+
+  .benefits-table thead th:last-child {
+    color: var(--yellow);
+    text-align: left;
+  }
+
+  .benefits-table tbody tr {
+    border-top: 1px solid rgba(255,255,255,0.07);
+    transition: background 0.2s;
+  }
+
+  .benefits-table tbody tr:hover {
+    background: rgba(255,255,255,0.03);
+  }
+
+  .benefits-table tbody td {
+    padding: 18px 24px;
+    vertical-align: middle;
+  }
+
+  .benefits-table tbody td:first-child {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .feat-pill {
+    display: inline-block;
+    background: rgba(249,213,99,0.12);
+    color: var(--yellow);
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 12px;
+    border-radius: 50px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .benefits-table .feat-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+    flex-wrap: wrap;
+    padding: 10px 16px 10px 14px;
+    font-size: 11px;
+  }
+
+  .benefits-table .feat-pill__num {
+    font-size: clamp(22px, 3.2vw, 30px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    text-transform: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .benefits-table tbody td:last-child {
+    color: rgba(255,255,255,0.92);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.65;
+  }
+
+  /* ============================
+     INSPIRATION
+  ============================ */
+  .inspiration {
+    background: var(--white);
+    padding: 100px 40px;
+  }
+
+  .inspiration-inner { max-width: 1180px; margin: 0 auto; }
+
+  /* 6 cartes en 2 colonnes + mockup smartphone en 3e colonne */
+  .inspi-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr minmax(160px, 240px);
+    gap: 24px 28px;
+    margin-top: 50px;
+    align-items: center;
+  }
+
+  .inspi-cards {
+    grid-column: 1 / 3;
+  }
+
+  .inspi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .inspi-preview {
+    margin: 0;
+    justify-self: center;
+    align-self: center;
+  }
+
+  .inspi-preview--phone {
+    max-width: 220px;
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 4px 6px 12px;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .inspi-preview__tilt {
+    transform: rotate(-6deg);
+    transform-origin: 50% 55%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+    filter:
+      drop-shadow(0 10px 20px rgba(25, 30, 85, 0.12))
+      drop-shadow(0 3px 8px rgba(25, 30, 85, 0.08));
+  }
+
+  /* Hauteur plafonnée pour s’aligner visuellement sur le bloc des 6 cartes */
+  .inspi-preview--phone img {
+    width: auto;
+    max-width: min(200px, 100%);
+    max-height: clamp(280px, 31vw, 350px);
+    height: auto;
+    display: block;
+    object-fit: contain;
+    margin: 0 auto;
+  }
+
+  @media (hover: hover) {
+    .inspi-preview--phone:hover .inspi-preview__tilt {
+      transform: rotate(-4deg) translateY(-2px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .inspi-preview__tilt {
+      transform: rotate(-3deg);
+    }
+    .inspi-preview--phone:hover .inspi-preview__tilt {
+      transform: rotate(-3deg);
+    }
+  }
+
+  .inspi-card {
+    background: var(--off-white);
+    border-radius: 14px;
+    padding: 22px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: default;
+    border: 1px solid rgba(25,30,85,0.05);
+  }
+
+  .inspi-emoji { font-size: 28px; flex-shrink: 0; line-height: 1; }
+
+  .inspi-text strong {
+    display: block;
+    font-family: 'Raleway', sans-serif;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 3px;
+  }
+
+  .inspi-text span {
+    font-size: 13px;
+    color: var(--grey-text);
+    font-weight: 400;
+    line-height: 1.45;
+  }
+
+  /* ============================
+     SOCIAL PROOF
+  ============================ */
+  .proof {
+    background: var(--navy);
+    padding: 100px 40px;
+  }
+
+  .proof-inner { max-width: 900px; margin: 0 auto; }
+
+  .proof-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 50px;
+    margin-bottom: 60px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .proof-stat {
+    padding: 40px 24px;
+    text-align: center;
+    background: rgba(255,255,255,0.03);
+  }
+
+  .proof-stat-num {
+    font-family: 'Raleway', sans-serif;
+    font-size: 46px;
+    font-weight: 900;
+    color: var(--yellow);
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .proof-stat-label {
+    font-size: 12px;
+    color: rgba(255,255,255,0.68);
+    font-weight: 400;
+    line-height: 1.5;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: 'Raleway', sans-serif;
+  }
+
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+
+  .review-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 24px;
+  }
+
+  .review-stars {
+    color: var(--yellow);
+    font-size: 13px;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+
+  .review-text {
+    font-size: 15px;
+    color: rgba(255,255,255,0.92);
+    line-height: 1.65;
+    font-weight: 400;
+    font-style: italic;
+    margin-bottom: 16px;
+  }
+
+  .review-author {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--white);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .review-origin {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    font-weight: 300;
+    margin-top: 2px;
+  }
+
+  /* ============================
+     CTA FINAL
+  ============================ */
+  .cta-final {
+    background: var(--navy);
+    padding: 120px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-glow {
+    position: absolute;
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(249,213,99,0.07) 0%, transparent 65%);
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .cta-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    font-family: 'Raleway', sans-serif;
+    font-size: clamp(30px, 5vw, 60px);
+    font-weight: 900;
+    color: var(--white);
+    text-transform: uppercase;
+    line-height: 1.05;
+    margin-bottom: 18px;
+  }
+
+  .cta-title em {
+    font-style: italic;
+    color: var(--yellow);
+    text-transform: none;
+    font-family: 'Meow Script', cursive;
+    font-size: 0.95em;
+    line-height: 1.3;
+  }
+
+  .cta-body {
+    font-size: 17px;
+    color: rgba(255,255,255,0.86);
+    line-height: 1.75;
+    font-weight: 400;
+    margin-bottom: 50px;
+  }
+
+  .price-box {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 36px 44px;
+    display: inline-block;
+    min-width: 320px;
+    margin-bottom: 28px;
+  }
+
+  .price-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.58);
+    margin-bottom: 12px;
+  }
+
+  .price-amount {
+    font-family: 'Raleway', sans-serif;
+    font-size: 58px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .price-amount sup {
+    font-size: 22px;
+    vertical-align: super;
+  }
+
+  .price-note {
+    font-size: 14px;
+    color: rgba(255,255,255,0.62);
+    font-weight: 300;
+    margin-bottom: 24px;
+  }
+
+  .payment-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+
+  .payment-logos img {
+    height: 26px;
+    width: auto;
+    border-radius: 4px;
+    opacity: 0.88;
+  }
+
+  .cta-reassurances {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .reassure-row {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+  }
+
+  .reassure-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.72);
+  }
+
+  .reassure-item strong {
+    color: rgba(255,255,255,0.92);
+    font-weight: 600;
+  }
+
+  .reassure-item .check {
+    color: var(--yellow);
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  /* ============================
+     ENGAGEMENTS
+  ============================ */
+  .engagements {
+    background: var(--white);
+    padding: 100px 40px;
+  }
+
+  .engagements-inner {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .engagements-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+
+  .eng-portrait {
+    margin: 0 0 22px 0;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(25,30,85,0.14);
+    border: 1px solid rgba(25,30,85,0.06);
+    max-width: min(400px, 100%);
+  }
+
+  .eng-portrait img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .eng-body {
+    font-size: 16px;
+    color: var(--grey-text);
+    line-height: 1.75;
+    font-weight: 400;
+  }
+
+  .engagements-grid > div:first-child p.eng-body:first-of-type {
+    margin-bottom: 24px;
+  }
+
+  .eng-signature {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid var(--grey);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .eng-sig-name {
+    font-family: 'Meow Script', cursive;
+    font-size: 26px;
+    color: var(--yellow);
+    line-height: 1.2;
+  }
+
+  .eng-sig-role {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--grey-text);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  .engagements-box {
+    background: var(--off-white);
+    border-radius: 16px;
+    padding: 32px;
+    border: 1px solid rgba(25,30,85,0.07);
+  }
+
+  .eng-box-label {
+    font-family: 'Raleway', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--yellow);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 22px;
+    line-height: 1.45;
+    max-width: 28em;
+  }
+
+  .eng-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .eng-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .eng-num {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    font-size: 13px;
+    color: var(--yellow);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .eng-txt {
+    font-size: 14px;
+    color: var(--navy);
+    font-weight: 400;
+    line-height: 1.55;
+  }
+
+  /* ============================
+     FOOTER
+  ============================ */
+  footer {
+    background: #0f1235;
+    padding: 40px 44px 28px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer-brand {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    color: rgba(255,255,255,0.7);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+  }
+
+  .footer-contact {
+    font-size: 13px;
+    color: rgba(255,255,255,0.46);
+  }
+
+  .footer-contact a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+  }
+
+  .footer-contact a:hover {
+    color: var(--yellow);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .footer-links a {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover {
+    color: var(--yellow);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 20px;
+  }
+
+  .footer-copy {
+    font-size: 12px;
+    color: rgba(255,255,255,0.32);
+  }
+
+  /* ============================
+     RESPONSIVE
+  ============================ */
+  @media (max-width: 1040px) {
+    .inspi-layout {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+    .inspi-cards { grid-column: auto; }
+    .inspi-preview--phone {
+      max-width: min(260px, 88%);
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .inspi-preview--phone img {
+      max-height: min(340px, 52vh);
+    }
+    .inspi-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 800px) {
+    nav { padding: 14px 20px; }
+    .hero { padding: 90px 20px 24px; }
+    .navy-stack-divider { padding: 14px 20px 18px; }
+    .stat-item { padding: 0 16px; }
+    .pivot-inner { grid-template-columns: 1fr; gap: 40px; }
+    .pages-stack { display: none; }
+    .feuilletage-grid { grid-template-columns: 1fr; }
+    .engagements-grid { grid-template-columns: 1fr; gap: 40px; align-items: stretch; }
+    .hero-title .dest { font-size: clamp(26px, 6.2vw, 44px); }
+    .proof-stats { grid-template-columns: 1fr; gap: 2px; }
+    .reviews-grid { grid-template-columns: 1fr; }
+    .inspi-grid { grid-template-columns: 1fr 1fr; }
+    .benefits-table thead { display: none; }
+    .benefits-table td { display: block; padding: 6px 0; }
+    .price-box { min-width: unset; width: 100%; }
+    footer { flex-direction: column; text-align: center; }
+    section { padding-left: 20px !important; padding-right: 20px !important; }
+  }
+
+  @media (max-width: 480px) {
+    .inspi-grid { grid-template-columns: 1fr; }
+    .hero-title .dest { font-size: 30px; }
+  }
+
+body{padding-top:0;}
+[data-hide-if-empty],[data-hide-if-empty-img]{transition:none;}
+img:not([src]){visibility:hidden;}
+</style></head><body><nav>
+  <a class=&quot;nav-logo&quot; href=&quot;#&quot;>
+    <span style=&quot;color:#fff;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:.04em;&quot;>LOGO SITE</span>
+  </a>
+  <a href=&quot;#&quot; class=&quot;nav-cta&quot; data-field-text=&quot;hero_cta_primary&quot;>Obtenir le guide →</a>
+</nav>
+
+<!-- HERO -->
+<section class=&quot;hero&quot;>
+  <div class=&quot;hero-glow&quot;></div>
+
+  <div class=&quot;cover-wrap&quot;>
+    <div class=&quot;cover-card&quot;>
+      <div class=&quot;cover-visual&quot;>
+        <img data-field-img=&quot;hero_cover_image&quot; alt=&quot;&quot; width=&quot;400&quot; height=&quot;560&quot;>
+      </div>
+    </div>
+    <div class=&quot;cover-badge&quot; data-field-text=&quot;hero_badge&quot; data-hide-if-empty=&quot;hero_badge&quot;></div>
+  </div>
+
+  <div class=&quot;hero-kicker&quot; data-field-text=&quot;hero_kicker&quot;></div>
+
+  <h1 class=&quot;hero-title&quot;>
+    <span class=&quot;dest&quot; data-field-text=&quot;hero_title_dest&quot;></span>
+    <em data-field-text=&quot;hero_title_em&quot;></em>
+  </h1>
+
+  <p class=&quot;hero-subtitle&quot; data-field-text=&quot;hero_subtitle&quot;></p>
+
+  <div class=&quot;hero-actions&quot;>
+    <a href=&quot;#&quot; class=&quot;btn-primary&quot; data-field-text=&quot;hero_cta_primary&quot;></a>
+    <a href=&quot;#&quot; class=&quot;btn-ghost&quot; data-field-text=&quot;hero_cta_secondary&quot; data-hide-if-empty=&quot;hero_cta_secondary&quot;></a>
+  </div>
+
+  <div class=&quot;hero-stats&quot;>
+    <div class=&quot;stat-item&quot; data-hide-if-empty=&quot;hero_stat_1_num&quot;>
+      <div class=&quot;stat-num&quot; data-field-text=&quot;hero_stat_1_num&quot;></div>
+      <div class=&quot;stat-label&quot; data-field-text=&quot;hero_stat_1_label&quot;></div>
+    </div>
+    <div class=&quot;stat-item&quot; data-hide-if-empty=&quot;hero_stat_2_num&quot;>
+      <div class=&quot;stat-num&quot; data-field-text=&quot;hero_stat_2_num&quot;></div>
+      <div class=&quot;stat-label&quot; data-field-text=&quot;hero_stat_2_label&quot;></div>
+    </div>
+    <div class=&quot;stat-item&quot; data-hide-if-empty=&quot;hero_stat_3_num&quot;>
+      <div class=&quot;stat-num&quot; data-field-text=&quot;hero_stat_3_num&quot;></div>
+      <div class=&quot;stat-label&quot; data-field-text=&quot;hero_stat_3_label&quot;></div>
+    </div>
+    <div class=&quot;stat-item&quot; data-hide-if-empty=&quot;hero_stat_4_num&quot;>
+      <div class=&quot;stat-num&quot; data-field-text=&quot;hero_stat_4_num&quot;></div>
+      <div class=&quot;stat-label&quot; data-field-text=&quot;hero_stat_4_label&quot;></div>
+    </div>
+  </div>
+</section>
+
+<div class=&quot;navy-stack-divider&quot; aria-hidden=&quot;true&quot;>
+  <div class=&quot;navy-stack-divider__line&quot;><span class=&quot;navy-stack-divider__gem&quot;></span></div>
+</div>
+
+<!-- PIVOT -->
+<section class=&quot;pivot&quot;>
+  <div class=&quot;pivot-glow&quot;></div>
+  <div class=&quot;pivot-inner&quot;>
+    <div>
+      <p class=&quot;pivot-lede&quot; data-field-text=&quot;pivot_lede&quot; data-hide-if-empty=&quot;pivot_lede&quot;></p>
+      <h2 class=&quot;section-title section-title-lg pivot-title&quot; data-field-text=&quot;pivot_title&quot;></h2>
+      <p class=&quot;pivot-body&quot; data-field-text=&quot;pivot_body&quot;></p>
+      <div class=&quot;pivot-quote&quot; data-hide-if-empty=&quot;pivot_quote&quot;>
+        <p data-field-text=&quot;pivot_quote&quot;></p>
+        <cite data-field-text=&quot;pivot_quote_cite&quot;></cite>
+      </div>
+    </div>
+    <div class=&quot;pages-stack&quot;>
+      <div class=&quot;page-mock page-mock-1&quot;>
+        <img class=&quot;page-mock-img&quot; data-field-img=&quot;pivot_image_1&quot; alt=&quot;&quot; width=&quot;400&quot; height=&quot;620&quot;>
+      </div>
+      <div class=&quot;page-mock page-mock-2&quot;>
+        <img class=&quot;page-mock-img&quot; data-field-img=&quot;pivot_image_2&quot; alt=&quot;&quot; width=&quot;400&quot; height=&quot;620&quot;>
+      </div>
+      <div class=&quot;page-mock page-mock-3&quot;>
+        <img class=&quot;page-mock-img&quot; data-field-img=&quot;pivot_image_3&quot; alt=&quot;&quot; width=&quot;400&quot; height=&quot;620&quot;>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEUILLETAGE -->
+<section class=&quot;feuilletage&quot; id=&quot;contenu&quot;>
+  <div class=&quot;feuilletage-inner&quot;>
+    <div class=&quot;section-tag tag-navy-outline&quot; data-field-text=&quot;feuilletage_tag&quot;></div>
+    <h2 class=&quot;section-title section-title-lg&quot; style=&quot;margin-bottom:14px;color:var(--navy);&quot; data-field-text=&quot;feuilletage_title&quot;></h2>
+    <p class=&quot;feuilletage-intro&quot; data-field-text=&quot;feuilletage_intro&quot; data-hide-if-empty=&quot;feuilletage_intro&quot;></p>
+
+    <div class=&quot;feuilletage-grid&quot;>
+      <article class=&quot;feuillet-card&quot; data-hide-if-empty-img=&quot;feuilletage_image_1&quot;>
+        <figure class=&quot;feuillet-thumb&quot;><img data-field-img=&quot;feuilletage_image_1&quot; alt=&quot;&quot; width=&quot;560&quot; height=&quot;790&quot;></figure>
+      </article>
+      <article class=&quot;feuillet-card&quot; data-hide-if-empty-img=&quot;feuilletage_image_2&quot;>
+        <figure class=&quot;feuillet-thumb&quot;><img data-field-img=&quot;feuilletage_image_2&quot; alt=&quot;&quot; width=&quot;560&quot; height=&quot;790&quot;></figure>
+      </article>
+      <article class=&quot;feuillet-card&quot; data-hide-if-empty-img=&quot;feuilletage_image_3&quot;>
+        <figure class=&quot;feuillet-thumb&quot;><img data-field-img=&quot;feuilletage_image_3&quot; alt=&quot;&quot; width=&quot;560&quot; height=&quot;790&quot;></figure>
+      </article>
+      <article class=&quot;feuillet-card&quot; data-hide-if-empty-img=&quot;feuilletage_image_4&quot;>
+        <figure class=&quot;feuillet-thumb&quot;><img data-field-img=&quot;feuilletage_image_4&quot; alt=&quot;&quot; width=&quot;560&quot; height=&quot;790&quot;></figure>
+      </article>
+      <article class=&quot;feuillet-card&quot; data-hide-if-empty-img=&quot;feuilletage_image_5&quot;>
+        <figure class=&quot;feuillet-thumb&quot;><img data-field-img=&quot;feuilletage_image_5&quot; alt=&quot;&quot; width=&quot;560&quot; height=&quot;790&quot;></figure>
+      </article>
+      <article class=&quot;feuillet-card&quot; data-hide-if-empty-img=&quot;feuilletage_image_6&quot;>
+        <figure class=&quot;feuillet-thumb&quot;><img data-field-img=&quot;feuilletage_image_6&quot; alt=&quot;&quot; width=&quot;560&quot; height=&quot;790&quot;></figure>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS TABLE -->
+<section class=&quot;benefits&quot;>
+  <div class=&quot;benefits-inner&quot;>
+    <div class=&quot;section-tag tag-white-outline&quot; data-field-text=&quot;benefits_tag&quot;></div>
+    <h2 class=&quot;section-title section-title-lg&quot; style=&quot;color:var(--white);margin-bottom:0;&quot; data-field-text=&quot;benefits_title&quot;></h2>
+    <table class=&quot;benefits-table&quot;>
+      <thead>
+        <tr>
+          <th data-field-text=&quot;benefits_th_1&quot;></th>
+          <th data-field-text=&quot;benefits_th_2&quot;></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-hide-if-empty=&quot;benefit_1_feature&quot;><td><span class=&quot;feat-pill&quot; data-field-text=&quot;benefit_1_feature&quot;></span></td><td data-field-text=&quot;benefit_1_value&quot;></td></tr>
+        <tr data-hide-if-empty=&quot;benefit_2_feature&quot;><td><span class=&quot;feat-pill&quot; data-field-text=&quot;benefit_2_feature&quot;></span></td><td data-field-text=&quot;benefit_2_value&quot;></td></tr>
+        <tr data-hide-if-empty=&quot;benefit_3_feature&quot;><td><span class=&quot;feat-pill&quot; data-field-text=&quot;benefit_3_feature&quot;></span></td><td data-field-text=&quot;benefit_3_value&quot;></td></tr>
+        <tr data-hide-if-empty=&quot;benefit_4_feature&quot;><td><span class=&quot;feat-pill&quot; data-field-text=&quot;benefit_4_feature&quot;></span></td><td data-field-text=&quot;benefit_4_value&quot;></td></tr>
+        <tr data-hide-if-empty=&quot;benefit_5_feature&quot;><td><span class=&quot;feat-pill&quot; data-field-text=&quot;benefit_5_feature&quot;></span></td><td data-field-text=&quot;benefit_5_value&quot;></td></tr>
+        <tr data-hide-if-empty=&quot;benefit_6_feature&quot;><td><span class=&quot;feat-pill&quot; data-field-text=&quot;benefit_6_feature&quot;></span></td><td data-field-text=&quot;benefit_6_value&quot;></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- INSPIRATION -->
+<section class=&quot;inspiration&quot;>
+  <div class=&quot;inspiration-inner&quot;>
+    <div class=&quot;section-tag tag-navy-outline&quot; data-field-text=&quot;inspi_tag&quot;></div>
+    <h2 class=&quot;section-title section-title-lg&quot; style=&quot;margin-bottom:12px;&quot; data-field-text=&quot;inspi_title&quot;></h2>
+    <p class=&quot;inspi-intro&quot; data-field-text=&quot;inspi_intro&quot; data-hide-if-empty=&quot;inspi_intro&quot;></p>
+    <div class=&quot;inspi-layout&quot;>
+      <div class=&quot;inspi-cards&quot;>
+        <div class=&quot;inspi-grid&quot;>
+          <div class=&quot;inspi-card&quot; data-hide-if-empty=&quot;inspi_1_title&quot;>
+            <div class=&quot;inspi-emoji&quot; aria-hidden=&quot;true&quot; data-field-text=&quot;inspi_1_emoji&quot;></div>
+            <div class=&quot;inspi-text&quot;><strong data-field-text=&quot;inspi_1_title&quot;></strong><span data-field-text=&quot;inspi_1_desc&quot;></span></div>
+          </div>
+          <div class=&quot;inspi-card&quot; data-hide-if-empty=&quot;inspi_2_title&quot;>
+            <div class=&quot;inspi-emoji&quot; aria-hidden=&quot;true&quot; data-field-text=&quot;inspi_2_emoji&quot;></div>
+            <div class=&quot;inspi-text&quot;><strong data-field-text=&quot;inspi_2_title&quot;></strong><span data-field-text=&quot;inspi_2_desc&quot;></span></div>
+          </div>
+          <div class=&quot;inspi-card&quot; data-hide-if-empty=&quot;inspi_3_title&quot;>
+            <div class=&quot;inspi-emoji&quot; aria-hidden=&quot;true&quot; data-field-text=&quot;inspi_3_emoji&quot;></div>
+            <div class=&quot;inspi-text&quot;><strong data-field-text=&quot;inspi_3_title&quot;></strong><span data-field-text=&quot;inspi_3_desc&quot;></span></div>
+          </div>
+          <div class=&quot;inspi-card&quot; data-hide-if-empty=&quot;inspi_4_title&quot;>
+            <div class=&quot;inspi-emoji&quot; aria-hidden=&quot;true&quot; data-field-text=&quot;inspi_4_emoji&quot;></div>
+            <div class=&quot;inspi-text&quot;><strong data-field-text=&quot;inspi_4_title&quot;></strong><span data-field-text=&quot;inspi_4_desc&quot;></span></div>
+          </div>
+          <div class=&quot;inspi-card&quot; data-hide-if-empty=&quot;inspi_5_title&quot;>
+            <div class=&quot;inspi-emoji&quot; aria-hidden=&quot;true&quot; data-field-text=&quot;inspi_5_emoji&quot;></div>
+            <div class=&quot;inspi-text&quot;><strong data-field-text=&quot;inspi_5_title&quot;></strong><span data-field-text=&quot;inspi_5_desc&quot;></span></div>
+          </div>
+          <div class=&quot;inspi-card&quot; data-hide-if-empty=&quot;inspi_6_title&quot;>
+            <div class=&quot;inspi-emoji&quot; aria-hidden=&quot;true&quot; data-field-text=&quot;inspi_6_emoji&quot;></div>
+            <div class=&quot;inspi-text&quot;><strong data-field-text=&quot;inspi_6_title&quot;></strong><span data-field-text=&quot;inspi_6_desc&quot;></span></div>
+          </div>
+        </div>
+      </div>
+      <figure class=&quot;inspi-preview inspi-preview--phone&quot;>
+        <div class=&quot;inspi-preview__tilt&quot;>
+          <img data-field-img=&quot;inspi_mockup_image&quot; alt=&quot;&quot; width=&quot;682&quot; height=&quot;1024&quot;>
+        </div>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class=&quot;proof&quot;>
+  <div class=&quot;proof-inner&quot;>
+    <div class=&quot;section-tag tag-white-outline&quot; style=&quot;margin-bottom:14px;&quot; data-field-text=&quot;proof_tag&quot;></div>
+    <h2 class=&quot;section-title section-title-lg&quot; style=&quot;color:var(--white);&quot; data-field-text=&quot;proof_title&quot;></h2>
+    <div class=&quot;proof-stats&quot;>
+      <div class=&quot;proof-stat&quot; data-hide-if-empty=&quot;proof_stat_1_num&quot;>
+        <div class=&quot;proof-stat-num&quot; data-field-text=&quot;proof_stat_1_num&quot;></div>
+        <div class=&quot;proof-stat-label&quot; data-field-text-nl2br=&quot;proof_stat_1_label&quot;></div>
+      </div>
+      <div class=&quot;proof-stat&quot; data-hide-if-empty=&quot;proof_stat_2_num&quot;>
+        <div class=&quot;proof-stat-num&quot; data-field-text=&quot;proof_stat_2_num&quot;></div>
+        <div class=&quot;proof-stat-label&quot; data-field-text-nl2br=&quot;proof_stat_2_label&quot;></div>
+      </div>
+      <div class=&quot;proof-stat&quot; data-hide-if-empty=&quot;proof_stat_3_num&quot;>
+        <div class=&quot;proof-stat-num&quot; data-field-text=&quot;proof_stat_3_num&quot;></div>
+        <div class=&quot;proof-stat-label&quot; data-field-text-nl2br=&quot;proof_stat_3_label&quot;></div>
+      </div>
+    </div>
+    <div class=&quot;reviews-grid&quot;>
+      <div class=&quot;review-card&quot; data-hide-if-empty=&quot;review_1_text&quot;>
+        <div class=&quot;review-stars&quot;>★★★★★</div>
+        <p class=&quot;review-text&quot; data-field-text=&quot;review_1_text&quot;></p>
+        <div class=&quot;review-author&quot; data-field-text=&quot;review_1_author&quot;></div>
+      </div>
+      <div class=&quot;review-card&quot; data-hide-if-empty=&quot;review_2_text&quot;>
+        <div class=&quot;review-stars&quot;>★★★★★</div>
+        <p class=&quot;review-text&quot; data-field-text=&quot;review_2_text&quot;></p>
+        <div class=&quot;review-author&quot; data-field-text=&quot;review_2_author&quot;></div>
+      </div>
+      <div class=&quot;review-card&quot; data-hide-if-empty=&quot;review_3_text&quot;>
+        <div class=&quot;review-stars&quot;>★★★★★</div>
+        <p class=&quot;review-text&quot; data-field-text=&quot;review_3_text&quot;></p>
+        <div class=&quot;review-author&quot; data-field-text=&quot;review_3_author&quot;></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ENGAGEMENTS -->
+<section class=&quot;engagements&quot;>
+  <div class=&quot;engagements-inner&quot;>
+    <div class=&quot;engagements-grid&quot;>
+      <div>
+        <figure class=&quot;eng-portrait&quot;>
+          <img data-field-img=&quot;eng_portrait&quot; alt=&quot;&quot; width=&quot;520&quot; height=&quot;340&quot;>
+        </figure>
+        <div class=&quot;section-tag tag-navy-outline&quot; data-field-text=&quot;eng_tag&quot;></div>
+        <h2 class=&quot;section-title section-title-md&quot; style=&quot;margin-bottom:18px;color:var(--navy);&quot; data-field-text-nl2br=&quot;eng_title&quot;></h2>
+        <p class=&quot;eng-body&quot; data-field-text=&quot;eng_body_1&quot; data-hide-if-empty=&quot;eng_body_1&quot;></p>
+        <p class=&quot;eng-body&quot; data-field-text=&quot;eng_body_2&quot; data-hide-if-empty=&quot;eng_body_2&quot;></p>
+        <div class=&quot;eng-signature&quot;>
+          <div>
+            <div class=&quot;eng-sig-name&quot; data-field-text=&quot;eng_sig_name&quot;></div>
+            <div class=&quot;eng-sig-role&quot; data-field-text=&quot;eng_sig_role&quot;></div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class=&quot;engagements-box&quot;>
+          <div class=&quot;eng-box-label&quot; data-field-text=&quot;eng_box_label&quot;></div>
+          <div class=&quot;eng-list&quot;>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_1&quot;><span class=&quot;eng-num&quot;>01</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_1&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_2&quot;><span class=&quot;eng-num&quot;>02</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_2&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_3&quot;><span class=&quot;eng-num&quot;>03</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_3&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_4&quot;><span class=&quot;eng-num&quot;>04</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_4&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_5&quot;><span class=&quot;eng-num&quot;>05</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_5&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_6&quot;><span class=&quot;eng-num&quot;>06</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_6&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_7&quot;><span class=&quot;eng-num&quot;>07</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_7&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_8&quot;><span class=&quot;eng-num&quot;>08</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_8&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_9&quot;><span class=&quot;eng-num&quot;>09</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_9&quot;></span></div>
+            <div class=&quot;eng-item&quot; data-hide-if-empty=&quot;eng_item_10&quot;><span class=&quot;eng-num&quot;>10</span><span class=&quot;eng-txt&quot; data-field-text=&quot;eng_item_10&quot;></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class=&quot;cta-final&quot; id=&quot;acheter&quot;>
+  <div class=&quot;cta-glow&quot;></div>
+  <div class=&quot;cta-inner&quot;>
+    <div class=&quot;section-tag tag-white-outline&quot; style=&quot;margin-bottom:20px;&quot; data-field-text=&quot;cta_tag&quot; data-hide-if-empty=&quot;cta_tag&quot;></div>
+    <h2 class=&quot;cta-title&quot;>
+      <span data-field-text=&quot;cta_title&quot;></span><br>
+      <em data-field-text=&quot;cta_title_em&quot;></em>
+    </h2>
+    <p class=&quot;cta-body&quot; data-field-text=&quot;cta_body&quot; data-hide-if-empty=&quot;cta_body&quot;></p>
+    <div class=&quot;price-box&quot;>
+      <div class=&quot;price-label&quot; data-field-text=&quot;cta_price_label&quot; data-hide-if-empty=&quot;cta_price_label&quot;></div>
+      <div class=&quot;price-amount&quot;><sup>€</sup><span data-field-text=&quot;cta_price&quot;></span></div>
+      <div class=&quot;price-note&quot; data-field-text=&quot;cta_price_note&quot; data-hide-if-empty=&quot;cta_price_note&quot;></div>
+      <a href=&quot;#&quot; class=&quot;btn-primary&quot; style=&quot;width:100%;justify-content:center;font-size:15px;padding:17px;&quot; data-field-text=&quot;cta_btn_label&quot;></a>
+      <div class=&quot;payment-logos&quot;>
+        <div style=&quot;width:40px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
+        <div style=&quot;width:40px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
+        <div style=&quot;width:68px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
+        <div style=&quot;width:50px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
+      </div>
+    </div>
+    <div class=&quot;cta-reassurances&quot;>
+      <div class=&quot;reassure-row&quot;>
+        <div class=&quot;reassure-item&quot; data-hide-if-empty=&quot;cta_reassure_1&quot;><span class=&quot;check&quot;>✓</span> <strong data-field-text=&quot;cta_reassure_1&quot;></strong></div>
+        <div class=&quot;reassure-item&quot; data-hide-if-empty=&quot;cta_reassure_2&quot;><span class=&quot;check&quot;>✓</span> <span data-field-text=&quot;cta_reassure_2&quot;></span></div>
+      </div>
+      <div class=&quot;reassure-row&quot;>
+        <div class=&quot;reassure-item&quot; data-hide-if-empty=&quot;cta_reassure_3&quot;><span class=&quot;check&quot;>✓</span> <span data-field-text=&quot;cta_reassure_3&quot;></span></div>
+        <div class=&quot;reassure-item&quot; data-hide-if-empty=&quot;cta_reassure_4&quot;><span class=&quot;check&quot;>✓</span> <span data-field-text=&quot;cta_reassure_4&quot;></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class=&quot;footer-inner&quot;>
+    <div>
+      <div class=&quot;footer-brand&quot; data-field-text=&quot;footer_brand&quot;></div>
+      <div class=&quot;footer-contact&quot; data-hide-if-empty=&quot;footer_contact_url&quot;>
+        <a href=&quot;#&quot; data-field-text=&quot;footer_contact_label&quot;></a>
+      </div>
+    </div>
+    <div class=&quot;footer-links&quot;>
+      <a href=&quot;#&quot; data-field-text=&quot;footer_cgv_label&quot; data-hide-if-empty=&quot;footer_cgv_url&quot;></a>
+      <a href=&quot;#&quot; data-field-text=&quot;footer_legal_label&quot; data-hide-if-empty=&quot;footer_legal_url&quot;></a>
+    </div>
+  </div>
+  <div class=&quot;footer-bottom&quot;>
+    <div class=&quot;footer-copy&quot; data-field-text=&quot;footer_copy&quot;></div>
+  </div>
+</footer>
+</body></html>"></iframe>
+  </div>
+</div>
+
+<button id="guide-toggle">Mode d'emploi</button>
+<div id="guide-panel">
+  <div class="guide-header">
+    <h2>Mode d'emploi</h2>
+    <button class="guide-close" id="guide-close">✕</button>
+  </div>
+  <div id="guide-body"></div>
+</div>
+
+<script>
+/* ============================================================
+   Éditeur Landing Guide — Region Lovers
+   Schéma des champs, formulaire, aperçu live, export de fichiers
+   ============================================================ */
+
+const TEXT = 'text';
+const TEXTAREA = 'textarea';
+const IMAGE = 'image';
+const URL_T = 'url';
+const NOTE = 'note';
+
+function grp(label, fields) { return { label, fields }; }
+function f(name, label, type = TEXT, placeholder = '') { return { name, label, type, placeholder }; }
+function note(text) { return { type: NOTE, text }; }
+
+const SCHEMA = [
+  {
+    tab: 'PROJET',
+    groups: [
+      grp('Ma page', [
+        f('project_slug', 'Nom de la destination (ex: loire, tenerife)', TEXT, 'loire'),
+      ]),
+      grp('Publier en un clic', [
+        note("Trois informations suffisent pour publier directement depuis cet écran, sans manipulation technique."),
+        f('project_site_url', 'Adresse du site (ex: https://loirelovers.fr)', URL_T, 'https://loirelovers.fr'),
+        f('project_wp_username', 'Nom d\'utilisateur WordPress (celui utilisé pour se connecter à l\'admin)', TEXT),
+        f('project_wp_app_password', 'Mot de passe d\'application'),
+        note("Comment l'obtenir : dans WordPress, aller sur Utilisateurs → Votre profil → tout en bas, section « Mots de passe d'application ». Taper un nom (ex: éditeur landing), cliquer sur « Ajouter » et copier le mot de passe généré ici. Il ne se ressaisit qu'une seule fois."),
+      ]),
+      grp('Avancé — pour un développeur (optionnel)', [
+        f('project_ssh_host', 'Hôte SSH', TEXT),
+        f('project_ssh_user', 'Utilisateur SSH', TEXT),
+        f('project_wp_root', 'Dossier racine WordPress sur le serveur', TEXT, '~/sites/xxxxx/'),
+      ]),
+    ]
+  },
+  {
+    tab: 'HERO',
+    groups: [
+      grp('Couverture & titre', [
+        f('hero_cover_image', 'Image de couverture du guide', IMAGE),
+        f('hero_badge', 'Badge (ex: +15 000 vendus)'),
+        f('hero_kicker', 'Kicker (ex: guide numérique · 161 pages)'),
+        f('hero_title_dest', 'Titre — partie destination (majuscules)'),
+        f('hero_title_em', 'Titre — partie en italique'),
+        f('hero_subtitle', 'Sous-titre', TEXTAREA),
+      ]),
+      grp('Statistiques (4 max)', [
+        f('hero_stat_1_num', 'Stat 1 — nombre'), f('hero_stat_1_label', 'Stat 1 — légende'),
+        f('hero_stat_2_num', 'Stat 2 — nombre'), f('hero_stat_2_label', 'Stat 2 — légende'),
+        f('hero_stat_3_num', 'Stat 3 — nombre'), f('hero_stat_3_label', 'Stat 3 — légende'),
+        f('hero_stat_4_num', 'Stat 4 — nombre'), f('hero_stat_4_label', 'Stat 4 — légende'),
+      ]),
+      grp('Boutons', [
+        f('hero_cta_primary', 'Texte bouton principal'),
+        f('hero_cta_secondary', 'Texte bouton secondaire (optionnel)'),
+      ]),
+    ]
+  },
+  {
+    tab: 'PIVOT',
+    groups: [
+      grp('Texte', [
+        f('pivot_lede', 'Amorce (optionnel)'),
+        f('pivot_title', 'Titre', TEXTAREA),
+        f('pivot_body', 'Corps de texte', TEXTAREA),
+        f('pivot_quote', 'Citation (optionnel)', TEXTAREA),
+        f('pivot_quote_cite', 'Signature de la citation'),
+      ]),
+      grp('Images (3 max)', [
+        f('pivot_image_1', 'Image 1', IMAGE),
+        f('pivot_image_2', 'Image 2', IMAGE),
+        f('pivot_image_3', 'Image 3', IMAGE),
+      ]),
+    ]
+  },
+  {
+    tab: 'FEUILLETAGE',
+    groups: [
+      grp('Texte', [
+        f('feuilletage_tag', 'Tag de section'),
+        f('feuilletage_title', 'Titre'),
+        f('feuilletage_intro', 'Intro (optionnel)', TEXTAREA),
+      ]),
+      grp('Images (6 max)', [1,2,3,4,5,6].map(i => f(`feuilletage_image_${i}`, `Image ${i}`, IMAGE))),
+    ]
+  },
+  {
+    tab: 'TABLEAU CONTENU',
+    groups: [
+      grp('Texte', [
+        f('benefits_tag', 'Tag de section'),
+        f('benefits_title', 'Titre'),
+        f('benefits_th_1', 'Titre colonne 1'),
+        f('benefits_th_2', 'Titre colonne 2'),
+      ]),
+      grp('Lignes (6 max)', [1,2,3,4,5,6].flatMap(i => [
+        f(`benefit_${i}_feature`, `Ligne ${i} — élément`),
+        f(`benefit_${i}_value`, `Ligne ${i} — bénéfice`, TEXTAREA),
+      ])),
+    ]
+  },
+  {
+    tab: 'INSPIRATION',
+    groups: [
+      grp('Texte', [
+        f('inspi_tag', 'Tag de section'),
+        f('inspi_title', 'Titre'),
+        f('inspi_intro', 'Intro (optionnel)', TEXTAREA),
+        f('inspi_mockup_image', 'Image mockup smartphone', IMAGE),
+      ]),
+      grp('Cartes (6 max)', [1,2,3,4,5,6].flatMap(i => [
+        f(`inspi_${i}_emoji`, `Carte ${i} — emoji`),
+        f(`inspi_${i}_title`, `Carte ${i} — titre`),
+        f(`inspi_${i}_desc`, `Carte ${i} — description`),
+      ])),
+    ]
+  },
+  {
+    tab: 'SOCIAL PROOF',
+    groups: [
+      grp('Texte', [
+        f('proof_tag', 'Tag de section'),
+        f('proof_title', 'Titre'),
+      ]),
+      grp('Statistiques (3 max)', [1,2,3].flatMap(i => [
+        f(`proof_stat_${i}_num`, `Stat ${i} — nombre`),
+        f(`proof_stat_${i}_label`, `Stat ${i} — légende (utiliser un retour à la ligne si besoin)`, TEXTAREA),
+      ])),
+      grp('Avis (3 max)', [1,2,3].flatMap(i => [
+        f(`review_${i}_text`, `Avis ${i} — texte`, TEXTAREA),
+        f(`review_${i}_author`, `Avis ${i} — auteur`),
+      ])),
+    ]
+  },
+  {
+    tab: 'ENGAGEMENTS',
+    groups: [
+      grp('Texte', [
+        f('eng_portrait', 'Photo portrait', IMAGE),
+        f('eng_tag', 'Tag de section'),
+        f('eng_title', 'Titre (retour à la ligne possible)', TEXTAREA),
+        f('eng_body_1', 'Paragraphe 1', TEXTAREA),
+        f('eng_body_2', 'Paragraphe 2', TEXTAREA),
+        f('eng_sig_name', 'Nom signature'),
+        f('eng_sig_role', 'Rôle signature'),
+        f('eng_box_label', 'Titre de la liste'),
+      ]),
+      grp('Engagements (10 max)', Array.from({length:10}, (_,i)=>i+1).map(i => f(`eng_item_${i}`, `Engagement ${i}`, TEXTAREA))),
+    ]
+  },
+  {
+    tab: 'CTA FINAL',
+    groups: [
+      grp('Texte & prix', [
+        f('cta_tag', 'Tag de section (optionnel)'),
+        f('cta_title', 'Titre'),
+        f('cta_title_em', 'Titre — partie en italique'),
+        f('cta_body', 'Corps de texte (optionnel)', TEXTAREA),
+        f('cta_price_label', 'Libellé au-dessus du prix'),
+        f('cta_price', 'Prix (nombre seul, ex: 21)'),
+        f('cta_price_note', 'Note sous le prix'),
+        f('cta_btn_label', 'Texte du bouton'),
+        f('cta_url', 'URL de vente SendOwl', URL_T),
+      ]),
+      grp('Réassurances (4)', [
+        f('cta_reassure_1', 'Ligne 1 gauche (gras)'),
+        f('cta_reassure_2', 'Ligne 1 droite'),
+        f('cta_reassure_3', 'Ligne 2 gauche'),
+        f('cta_reassure_4', 'Ligne 2 droite'),
+      ]),
+    ]
+  },
+  {
+    tab: 'FOOTER',
+    groups: [
+      grp('Footer', [
+        f('footer_brand', 'Marque'),
+        f('footer_copy', 'Copyright'),
+        f('footer_contact_url', 'URL formulaire de contact', URL_T),
+        f('footer_contact_label', 'Texte du lien contact'),
+        f('footer_cgv_url', 'URL des CGV', URL_T),
+        f('footer_cgv_label', 'Texte du lien CGV'),
+        f('footer_legal_url', 'URL des mentions légales', URL_T),
+        f('footer_legal_label', 'Texte du lien mentions légales'),
+      ]),
+    ]
+  },
+];
+
+const ALL_FIELDS = SCHEMA.flatMap(t => t.groups.flatMap(g => g.fields)).filter(x => x.type !== NOTE);
+const IMAGE_FIELDS = ALL_FIELDS.filter(x => x.type === IMAGE).map(x => x.name);
+
+// Contenu par défaut : celui du guide Tenerife (canarias-lovers.com), utilisé
+// comme gabarit de départ pour tout nouveau projet. On personnalise ensuite
+// destination par destination sans repartir d'une page blanche.
+const TENERIFE_DEFAULTS = {
+  hero_badge: '+15 000 vendus',
+  hero_kicker: 'guide numérique · 161 pages',
+  hero_title_dest: 'TENERIFE VOUS ATTEND,',
+  hero_title_em: 'construisez le voyage qui vous ressemble',
+  hero_subtitle: 'Choisir les bonnes zones, les bons lieux, les bonnes ambiances — et partir avec un voyage pensé pour vous, pas pour tout le monde.',
+  hero_stat_1_num: '112', hero_stat_1_label: 'lieux sélectionnés',
+  hero_stat_2_num: '161', hero_stat_2_label: 'pages',
+  hero_stat_3_num: '14', hero_stat_3_label: 'zones couvertes',
+  hero_stat_4_num: '6', hero_stat_4_label: 'pages inspiration',
+  hero_cta_primary: 'Obtenir le guide →',
+  hero_cta_secondary: 'Voir le contenu',
+
+  pivot_lede: "Trop d'infos, pas assez de clarté ?",
+  pivot_title: 'La plupart des guides accumulent, le nôtre aide à choisir',
+  pivot_body: "Le guide Tenerife Canarias Lovers n'est pas une base de données. C'est un outil de décision — pensé pour smartphone et tablette — conçu pour vous permettre de comprendre la destination avant de réserver, et de construire un voyage personnel, pas générique.",
+  pivot_quote: '"Le guide vous aide à choisir. Notre site vous aide à organiser. Une philosophie simple, appliquée à chaque page."',
+  pivot_quote_cite: '— CANARIAS LOVERS',
+
+  feuilletage_tag: 'Un aperçu du guide',
+  feuilletage_title: "Feuilletez avant d'acheter",
+  feuilletage_intro: '112 lieux, 3 photos par lieu en moyenne, des cartes cliquables qui ouvrent la navigation GPS directement sur votre smartphone.',
+
+  benefits_tag: 'Le contenu',
+  benefits_title: 'Pour planifier avec plaisir, sans stress',
+  benefits_th_1: "Ce qu'il y a dans le guide",
+  benefits_th_2: 'Ce que vous en tirez concrètement',
+  benefit_1_feature: '112 lieux', benefit_1_value: "Fini le tri infini. Une sélection éditoriale honnête à la place des listes exhaustives qui ne vous disent pas quoi choisir.",
+  benefit_2_feature: '3 photos / lieu', benefit_2_value: "Vous visualisez l'ambiance avant d'y aller. La photo n'illustre pas — elle aide à décider.",
+  benefit_3_feature: '1 carte par zone', benefit_3_value: 'Vous comprenez les distances réelles, construisez des journées cohérentes — et sur place, un tap ouvre la navigation GPS directement.',
+  benefit_4_feature: '6 pages inspiration', benefit_4_value: 'Vous explorez selon vos envies du moment : volcans aujourd\'hui, plages demain.',
+  benefit_5_feature: '1 lieu = 1 page', benefit_5_value: 'Comparer deux endroits prend 30 secondes. La décision devient simple, pas stressante.',
+  benefit_6_feature: 'Liens vers le site', benefit_6_value: 'Les infos pratiques de notre site sont toujours à jour — sans que le guide ne vieillisse.',
+
+  inspi_tag: 'Explorer par envies',
+  inspi_title: "6 lectures thématiques, de l'île",
+  inspi_intro: "En plus des 112 fiches lieux, le guide propose des entrées par ambiances — pour explorer Tenerife selon ce qui vous attire vraiment.",
+  inspi_1_emoji: '🌋', inspi_1_title: 'Découvertes volcaniques', inspi_1_desc: 'Caldeira, coulées de lave, paysages lunaires',
+  inspi_2_emoji: '🏖️', inspi_2_title: 'Plages et baignade', inspi_2_desc: 'Pour tous les goûts et profils',
+  inspi_3_emoji: '🥾', inspi_3_title: 'Marches & randonnées', inspi_3_desc: 'Repères niveaux, paysages, durées',
+  inspi_4_emoji: '🌿', inspi_4_title: 'Jardins & oasis urbaines', inspi_4_desc: 'Flore endémique et haltes vertes',
+  inspi_5_emoji: '👨‍👩‍👧', inspi_5_title: 'Ambiances familiales', inspi_5_desc: 'Parcs, accès, durées adaptées',
+  inspi_6_emoji: '🏛️', inspi_6_title: 'Architecture canarienne', inspi_6_desc: 'Patrimoine, balcons, villages historiques',
+
+  proof_tag: 'Ils nous font confiance',
+  proof_title: '15 000 voyageurs ont déjà choisi nos guides',
+  proof_stat_1_num: '+15 000', proof_stat_1_label: 'Guides Region Lovers\nvendus',
+  proof_stat_2_num: '+30 000', proof_stat_2_label: 'km parcourus\npar notre équipe',
+  proof_stat_3_num: '100%', proof_stat_3_label: 'indépendant\naucun sponsor',
+  review_1_text: '« C\'est le guide le plus complet que j\'ai trouvé et il rend l\'organisation d\'un voyage photographique beaucoup moins cauchemardesque. »', review_1_author: 'Noaemi',
+  review_2_text: '« Excellent ! Super excitée d\'avoir trouvé quelque chose d\'aussi utile comparé aux autres livres que j\'ai achetés! »', review_2_author: 'Sarra',
+  review_3_text: '« C\'est génial ! Je trouve le guide très bien écrit, avec beaucoup d\'informations pertinentes et utiles. Des informations telles que le temps nécessaire pour visiter un endroit sont très utiles pour planifier une visite. Et les photos sont incroyables – elles vous donnent vraiment envie d\'y aller »', review_3_author: 'Cristiana',
+
+  eng_tag: 'Nos engagements',
+  eng_title: 'Un guide qui\nvous respecte',
+  eng_body_1: "À l'heure où les guides de voyage se multiplient sans que personne ne soit jamais sur place, nous faisons le choix inverse : chaque lieu dont nous parlons, nous l'avons visité. Chaque photo, nous l'avons prise.",
+  eng_body_2: "Pas de contenu généré, pas d'informations recyclées. Un regard humain, de terrain, 100% indépendant.",
+  eng_sig_name: 'Claire & Manu',
+  eng_sig_role: 'Co-fondateurs · Region Lovers',
+  eng_box_label: 'Les 10 engagements de Region Lovers',
+  eng_item_1: 'Visiter tous les lieux dont nous vous parlons.',
+  eng_item_2: 'Pour chaque ville, dormir dans au moins un hôtel, visiter ceux que nous recommandons.',
+  eng_item_3: 'Pour chaque ville, manger dans au moins un restaurant, visiter ceux que nous sélectionnons.',
+  eng_item_4: 'Payer intégralement toutes nos factures, refuser tout partenariat ou sponsoring.',
+  eng_item_5: 'Mettre à jour périodiquement nos articles, avec l\'aide de nos lecteurs.',
+  eng_item_6: 'Enrichir nos articles par nos expériences sur place.',
+  eng_item_7: 'Utiliser à 99 % nos propres photos.',
+  eng_item_8: 'Avoir une utilisation raisonnée et transparente des outils numériques, que nous alimentons avec nos informations vérifiées sur place.',
+  eng_item_9: 'Informer sur le binôme voyageur/rédacteur qui a donné naissance à l\'article.',
+  eng_item_10: 'Vous dire ce que nous faisons, et faire ce que nous vous disons !',
+
+  cta_tag: 'Prêt à partir ?',
+  cta_title: 'Tenerife vous attend,',
+  cta_title_em: 'partez avec les bons choix',
+  cta_body: 'Accès immédiat au guide numérique complet. Lisible sur smartphone, tablette et ordinateur. Connecté à notre site Canarias Lovers pour les informations pratiques à jour.',
+  cta_price_label: 'Guide numérique — Accès immédiat',
+  cta_price: '21',
+  cta_price_note: 'Paiement unique · Téléchargement immédiat',
+  cta_btn_label: 'Obtenir le guide →',
+  cta_url: '#',
+  cta_reassure_1: 'Plus de 15 000 guides vendus',
+  cta_reassure_2: 'Optimisé smartphone & tablette',
+  cta_reassure_3: 'Paiement sécurisé',
+  cta_reassure_4: 'Téléchargement immédiat',
+
+  footer_brand: 'Éditions Region Lovers · Canarias Lovers',
+  footer_copy: '© 2025 Region Lovers · Guide Tenerife',
+  footer_contact_url: 'https://canarias-lovers.com/contact/',
+  footer_contact_label: 'Nous contacter',
+  footer_cgv_url: 'https://canarias-lovers.com/conditions-generales-de-vente/',
+  footer_cgv_label: 'CGV',
+  footer_legal_url: 'https://canarias-lovers.com/politiques/',
+  footer_legal_label: 'Mentions légales',
+};
+
+/* ---------------- State & persistence (API + MongoDB) ---------------- */
+
+// Les projets sont stockés côté serveur (MongoDB) pour permettre à toute
+// l'équipe d'y accéder et de reprendre le travail où il a été laissé, depuis
+// n'importe quel poste. Le jeton d'authentification est posé par l'app
+// Next.js parente dans localStorage (même origine que cet iframe).
+
+function authHeaders() {
+  const token = localStorage.getItem('auth_token');
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function apiCall(path, opts = {}) {
+  const res = await fetch(path, {
+    ...opts,
+    headers: { 'Content-Type': 'application/json', ...authHeaders(), ...(opts.headers || {}) },
+  });
+  let json = null;
+  try { json = await res.json(); } catch (e) { /* pas de corps JSON */ }
+
+  if (res.status === 401) {
+    try { window.parent.postMessage({ type: 'rl-session-expired' }, window.location.origin); } catch (e) { /* ignore */ }
+  }
+
+  return { ok: res.ok, status: res.status, json };
+}
+
+async function fetchProjectList() {
+  const { ok, json } = await apiCall('/api/projects');
+  if (!ok) throw new Error(json?.message || 'Erreur de chargement des projets.');
+  return json.projects || [];
+}
+
+async function fetchProject(slug) {
+  const { ok, status, json } = await apiCall(`/api/projects/${encodeURIComponent(slug)}`);
+  if (status === 404) return null;
+  if (!ok) throw new Error(json?.message || 'Erreur de chargement du projet.');
+  return json.project;
+}
+
+async function saveProjectRemote(slug, d, imgs) {
+  const { ok, json } = await apiCall(`/api/projects/${encodeURIComponent(slug)}`, {
+    method: 'PUT',
+    body: JSON.stringify({ data: d, images: imgs }),
+  });
+  if (!ok) throw new Error(json?.message || 'Erreur de sauvegarde.');
+}
+
+async function deleteProjectRemote(slug) {
+  const { ok, json } = await apiCall(`/api/projects/${encodeURIComponent(slug)}`, { method: 'DELETE' });
+  if (!ok) throw new Error(json?.message || 'Erreur de suppression.');
+}
+
+function setSyncStatus(text) {
+  const el = document.getElementById('sync-status');
+  if (el) el.textContent = text;
+}
+
+let currentSlug = null;
+let data = {}; // { fieldName: string }
+let images = {}; // { fieldName: { filename, dataUrl } }
+let projectSlugs = [];
+let saveTimer = null;
+
+function newProjectData() {
+  const d = {};
+  ALL_FIELDS.forEach(fld => { if (fld.type !== IMAGE) d[fld.name] = TENERIFE_DEFAULTS[fld.name] || ''; });
+  return d;
+}
+
+function persistCurrent() {
+  if (!currentSlug) return;
+  renderGuidePanel();
+  clearTimeout(saveTimer);
+  setSyncStatus('Modifications en attente...');
+  saveTimer = setTimeout(async () => {
+    try {
+      setSyncStatus('Enregistrement...');
+      await saveProjectRemote(currentSlug, data, images);
+      setSyncStatus('Enregistré ✓');
+      setTimeout(() => setSyncStatus(''), 1500);
+    } catch (e) {
+      console.error(e);
+      setSyncStatus('Erreur de sauvegarde — voir la console');
+    }
+  }, 700);
+}
+
+/* ---------------- Form rendering ---------------- */
+
+const formEl = document.getElementById('form');
+const tabsEl = document.getElementById('tabs');
+let activeTab = SCHEMA[0].tab;
+
+function renderTabs() {
+  tabsEl.innerHTML = '';
+  SCHEMA.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'tab-btn' + (t.tab === activeTab ? ' active' : '');
+    btn.textContent = t.tab;
+    btn.onclick = () => { activeTab = t.tab; renderTabs(); renderForm(); };
+    tabsEl.appendChild(btn);
+  });
+}
+
+function fieldValue(name) {
+  return data[name] || '';
+}
+
+function renderForm() {
+  formEl.innerHTML = '';
+  const tabDef = SCHEMA.find(t => t.tab === activeTab);
+  tabDef.groups.forEach(group => {
+    const gWrap = document.createElement('div');
+    gWrap.className = 'field-group';
+    const h = document.createElement('h3');
+    h.textContent = group.label;
+    gWrap.appendChild(h);
+
+    group.fields.forEach(fld => {
+      if (fld.type === NOTE) {
+        const p = document.createElement('p');
+        p.className = 'field-note';
+        p.textContent = fld.text;
+        gWrap.appendChild(p);
+        return;
+      }
+
+      const row = document.createElement('label');
+      row.className = 'field-row';
+      const lbl = document.createElement('span');
+      lbl.className = 'field-label';
+      lbl.textContent = fld.label;
+      row.appendChild(lbl);
+
+      if (fld.type === IMAGE) {
+        const wrap = document.createElement('div');
+        wrap.className = 'image-field';
+        const preview = document.createElement('img');
+        preview.className = 'image-preview';
+        const img = images[fld.name];
+        if (img) preview.src = img.url;
+        else preview.style.display = 'none';
+        const status = document.createElement('span');
+        status.className = 'image-status';
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = async () => {
+          const file = input.files[0];
+          if (!file) return;
+
+          // aperçu instantané pendant l'envoi
+          const tempReader = new FileReader();
+          tempReader.onload = () => { preview.src = tempReader.result; preview.style.display = 'block'; };
+          tempReader.readAsDataURL(file);
+
+          status.textContent = 'Envoi vers WordPress...';
+          const uploaded = await uploadImageToSite(file);
+          if (!uploaded) {
+            status.textContent = '';
+            return;
+          }
+          images[fld.name] = uploaded;
+          preview.src = uploaded.url;
+          status.textContent = '';
+          persistCurrent();
+          updatePreviewImage(fld.name);
+        };
+        wrap.appendChild(preview);
+        wrap.appendChild(input);
+        wrap.appendChild(status);
+        if (img) {
+          const clear = document.createElement('button');
+          clear.textContent = '✕ retirer';
+          clear.type = 'button';
+          clear.className = 'btn-clear';
+          clear.onclick = () => { delete images[fld.name]; persistCurrent(); renderForm(); updatePreviewImage(fld.name); };
+          wrap.appendChild(clear);
+        }
+        row.appendChild(wrap);
+      } else {
+        const input = document.createElement(fld.type === TEXTAREA ? 'textarea' : 'input');
+        if (fld.type !== TEXTAREA) input.type = fld.type === URL_T ? 'url' : 'text';
+        input.value = fieldValue(fld.name);
+        input.placeholder = fld.placeholder || '';
+        input.oninput = () => {
+          data[fld.name] = input.value;
+          persistCurrent();
+          updatePreviewText(fld.name);
+        };
+        row.appendChild(input);
+      }
+      gWrap.appendChild(row);
+    });
+    formEl.appendChild(gWrap);
+  });
+}
+
+/* ---------------- Preview binding ---------------- */
+
+const iframe = document.getElementById('preview-frame');
+
+function previewDoc() {
+  return iframe.contentDocument;
+}
+
+function updatePreviewText(name) {
+  const doc = previewDoc();
+  if (!doc) return;
+  const value = fieldValue(name);
+  doc.querySelectorAll(`[data-field-text="${name}"]`).forEach(el => { el.textContent = value; });
+  doc.querySelectorAll(`[data-field-text-nl2br="${name}"]`).forEach(el => {
+    el.innerHTML = '';
+    value.split('\n').forEach((line, i) => {
+      if (i > 0) el.appendChild(doc.createElement('br'));
+      el.appendChild(doc.createTextNode(line));
+    });
+  });
+  doc.querySelectorAll(`[data-hide-if-empty="${name}"]`).forEach(el => {
+    el.style.display = value.trim() ? '' : 'none';
+  });
+}
+
+function updatePreviewImage(name) {
+  const doc = previewDoc();
+  if (!doc) return;
+  const img = images[name];
+  doc.querySelectorAll(`[data-field-img="${name}"]`).forEach(el => {
+    if (img) { el.src = img.url; el.closest('[data-hide-if-empty-img]')?.style && (el.closest(`[data-hide-if-empty-img="${name}"]`).style.display = ''); }
+    else { el.removeAttribute('src'); }
+  });
+  const wrapper = doc.querySelector(`[data-hide-if-empty-img="${name}"]`);
+  if (wrapper) wrapper.style.display = img ? '' : 'none';
+}
+
+function refreshWholePreview() {
+  ALL_FIELDS.forEach(fld => {
+    if (fld.type === IMAGE) updatePreviewImage(fld.name);
+    else updatePreviewText(fld.name);
+  });
+}
+
+iframe.addEventListener('load', refreshWholePreview);
+
+/* ---------------- Project management ---------------- */
+
+const projectSelect = document.getElementById('project-select');
+
+function refreshProjectSelect() {
+  projectSelect.innerHTML = '';
+  projectSlugs.forEach(slug => {
+    const opt = document.createElement('option');
+    opt.value = slug;
+    opt.textContent = slug;
+    if (slug === currentSlug) opt.selected = true;
+    projectSelect.appendChild(opt);
+  });
+}
+
+async function loadProject(slug) {
+  currentSlug = slug;
+  setSyncStatus('Chargement...');
+
+  let proj = null;
+  try {
+    proj = await fetchProject(slug);
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('Erreur de chargement — voir la console');
+  }
+
+  if (!proj) {
+    data = newProjectData();
+    images = {};
+    data.project_slug = slug;
+    if (!projectSlugs.includes(slug)) projectSlugs.push(slug);
+    try {
+      await saveProjectRemote(slug, data, images);
+      setSyncStatus('');
+    } catch (e) {
+      console.error(e);
+      setSyncStatus('Erreur de sauvegarde — voir la console');
+    }
+  } else {
+    data = proj.data || {};
+    images = proj.images || {};
+    if (!data.project_slug) data.project_slug = slug;
+    setSyncStatus('');
+  }
+
+  refreshProjectSelect();
+  renderTabs();
+  renderForm();
+  refreshWholePreview();
+  renderGuidePanel();
+}
+
+document.getElementById('new-project-btn').onclick = async () => {
+  const slug = prompt('Nom du projet (ex: loire, tenerife, gran-canaria) :');
+  if (!slug) return;
+  const clean = slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  await loadProject(clean);
+};
+
+document.getElementById('duplicate-project-btn').onclick = async () => {
+  if (!currentSlug) return;
+  const slug = prompt('Nouveau nom pour la copie :', currentSlug + '-copie');
+  if (!slug) return;
+  const clean = slug.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+  const copyData = JSON.parse(JSON.stringify(data));
+  const copyImages = JSON.parse(JSON.stringify(images));
+  copyData.project_slug = clean;
+  try {
+    setSyncStatus('Duplication...');
+    await saveProjectRemote(clean, copyData, copyImages);
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('Erreur de duplication — voir la console');
+    return;
+  }
+  if (!projectSlugs.includes(clean)) projectSlugs.push(clean);
+  await loadProject(clean);
+};
+
+document.getElementById('reset-project-btn').onclick = () => {
+  if (!currentSlug) return;
+  if (!confirm(`Remplacer tout le texte du projet "${currentSlug}" par le contenu par défaut de Tenerife ? Les images et les réglages de l'onglet PROJET sont conservés.`)) return;
+  const freshText = newProjectData();
+  ALL_FIELDS.forEach(fld => {
+    if (fld.type !== IMAGE && !fld.name.startsWith('project_')) {
+      data[fld.name] = freshText[fld.name];
+    }
+  });
+  persistCurrent();
+  renderForm();
+  refreshWholePreview();
+};
+
+document.getElementById('delete-project-btn').onclick = async () => {
+  if (!currentSlug) return;
+  if (!confirm(`Supprimer le projet "${currentSlug}" ? Cette action est irréversible pour toute l'équipe.`)) return;
+  try {
+    await deleteProjectRemote(currentSlug);
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('Erreur de suppression — voir la console');
+    return;
+  }
+  projectSlugs = projectSlugs.filter(s => s !== currentSlug);
+  if (projectSlugs.length) await loadProject(projectSlugs[0]);
+  else await loadProject('tenerife');
+};
+
+projectSelect.onchange = () => loadProject(projectSelect.value);
+
+/* ---------------- Export: populate-*.php ---------------- */
+
+function phpEscape(str) {
+  return String(str || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+function slugify(str) {
+  return String(str || '').trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+function buildImagesMap(slug) {
+  const map = {};
+  IMAGE_FIELDS.forEach(name => {
+    const img = images[name];
+    if (!img) return;
+    const ext = (img.filename.match(/\.[a-z0-9]+$/i) || ['.png'])[0];
+    const filename = `${name.replace(/_/g, '-')}-${slug}${ext}`;
+    map[name] = { filename, title: ALL_FIELDS.find(x => x.name === name)?.label || name, original: img };
+  });
+  return map;
+}
+
+function buildPopulatePhp() {
+  const slug = data.project_slug || currentSlug || 'destination';
+  const imgMap = buildImagesMap(slug);
+
+  const imagesLines = Object.entries(imgMap)
+    .map(([name, v]) => `\t'${name}' => [ '${v.filename}', '${phpEscape(v.title)}' ],`)
+    .join('\n');
+
+  const textFields = ALL_FIELDS.filter(x => x.type !== IMAGE && !x.name.startsWith('project_'));
+  const fieldsLines = textFields
+    .map(x => `\t'${x.name}' => '${phpEscape(data[x.name])}',`)
+    .join('\n');
+
+  return `<?php
+/**
+ * Script de pré-remplissage ACF — Guide ${slug}
+ * Généré par l'éditeur landing-guide — ne pas exécuter deux fois.
+ *
+ * Usage WP-CLI (depuis la racine WordPress) :
+ *   wp eval-file populate-${slug}.php
+ */
+
+function import_asset( string $filename, string $title = '' ): int|false {
+\t$theme_dir = get_stylesheet_directory();
+\t$file_path = $theme_dir . '/assets/' . $filename;
+
+\tif ( ! file_exists( $file_path ) ) {
+\t\tWP_CLI::warning( "Fichier introuvable : assets/{$filename} — champ image ignoré." );
+\t\treturn false;
+\t}
+
+\t$slug     = sanitize_title( $title ?: pathinfo( $filename, PATHINFO_FILENAME ) );
+\t$existing = get_posts( [
+\t\t'post_type'      => 'attachment',
+\t\t'name'           => $slug,
+\t\t'posts_per_page' => 1,
+\t\t'post_status'    => 'inherit',
+\t] );
+\tif ( $existing ) {
+\t\tWP_CLI::log( "  · {$filename} — déjà dans la médiathèque (ID {$existing[0]->ID})" );
+\t\treturn $existing[0]->ID;
+\t}
+
+\t$tmp = wp_tempnam( $filename );
+\tcopy( $file_path, $tmp );
+
+\t$file_array = [ 'name' => $filename, 'tmp_name' => $tmp ];
+
+\trequire_once ABSPATH . 'wp-admin/includes/image.php';
+\trequire_once ABSPATH . 'wp-admin/includes/file.php';
+\trequire_once ABSPATH . 'wp-admin/includes/media.php';
+
+\t$attachment_id = media_handle_sideload( $file_array, 0, $title ?: $filename );
+
+\tif ( is_wp_error( $attachment_id ) ) {
+\t\tWP_CLI::warning( "Erreur import {$filename} : " . $attachment_id->get_error_message() );
+\t\treturn false;
+\t}
+
+\tWP_CLI::log( "  · {$filename} → médiathèque ID {$attachment_id}" );
+\treturn $attachment_id;
+}
+
+$pages = get_posts( [
+\t'post_type'      => 'page',
+\t'posts_per_page' => 10,
+\t'meta_key'       => '_wp_page_template',
+\t'meta_value'     => 'page-landing-guide.php',
+\t'post_status'    => 'any',
+] );
+
+if ( empty( $pages ) ) {
+\tWP_CLI::error( 'Aucune page avec le template "Landing Guide" trouvée. Créez la page d\\'abord dans WP Admin.' );
+\treturn;
+}
+
+$page = null;
+foreach ( $pages as $p ) {
+\tif ( stripos( $p->post_name, '${slug}' ) !== false || stripos( $p->post_title, '${slug}' ) !== false ) {
+\t\t$page = $p;
+\t\tbreak;
+\t}
+}
+if ( ! $page ) { $page = $pages[0]; }
+
+$page_id = $page->ID;
+WP_CLI::log( "Page trouvée : \\"{$page->post_title}\\" (ID {$page_id})" );
+
+WP_CLI::log( 'Import des images...' );
+
+$images = [
+${imagesLines || "\t// Aucune image ajoutée dans l'éditeur"}
+];
+
+$image_ids = [];
+foreach ( $images as $field_name => [ $filename, $title ] ) {
+\t$id = import_asset( $filename, $title );
+\tif ( $id ) {
+\t\t$image_ids[ $field_name ] = $id;
+\t\tupdate_field( $field_name, $id, $page_id );
+\t}
+}
+
+WP_CLI::log( '' );
+
+$fields = [
+${fieldsLines}
+];
+
+$count = 0;
+foreach ( $fields as $field_name => $value ) {
+\tif ( update_field( $field_name, $value, $page_id ) !== false ) { $count++; }
+}
+
+$img_count = count( $image_ids );
+WP_CLI::success( "{$count} champ(s) texte mis à jour + {$img_count} image(s) importée(s) sur la page ID {$page_id}." );
+`;
+}
+
+function buildDeploymentGuide() {
+  const slug = data.project_slug || currentSlug || 'destination';
+  const domain = data.project_site_url || '(à compléter)';
+  const sshHost = data.project_ssh_host || '(à compléter)';
+  const sshUser = data.project_ssh_user || '(à compléter)';
+  const wpRoot = data.project_wp_root || '~/sites/xxxxx/';
+  const imgMap = buildImagesMap(slug);
+  const imgList = Object.values(imgMap).map(v => `  - ${v.filename}`).join('\n') || '  (aucune image)';
+
+  return `MODE D'EMPLOI — Mise en ligne du guide "${slug}"
+Site cible : ${domain}
+================================================================
+
+Ce fichier ZIP est le repli MANUEL, pour un développeur, à utiliser
+uniquement si le bouton "Publier en ligne" de l'éditeur ne fonctionne pas
+(site non compatible, pas d'accès admin, etc.). Dans le cas normal, la
+publication en un clic ne nécessite ni SFTP ni ce fichier.
+
+Fichiers générés par l'éditeur (dans ce dossier de téléchargement) :
+  - populate-${slug}.php
+${imgList}
+
+ÉTAPE 1 — Créer la page WordPress
+  1. Dans WP Admin (${domain}/wp-admin), Pages > Ajouter.
+  2. Titre de la page + slug clair (ex: guide-${slug}).
+  3. Dans "Attributs de la page", choisir le modèle "Landing Guide".
+  4. Publier.
+
+ÉTAPE 2 — Vérifier le groupe de champs ACF
+  Si le template "Landing Guide" n'a jamais été utilisé sur ce site,
+  importer d'abord acf-landing-guide.json dans ACF > Groupes de champs > Importer.
+  Si déjà en place, passer à l'étape 3.
+
+ÉTAPE 3 — Déposer les fichiers sur le serveur (SFTP)
+  Le thème utilisé sur tous nos sites est "genesis-sample".
+  - Déposer les images listées ci-dessus dans :
+      wp-content/themes/genesis-sample/assets/
+  - Déposer populate-${slug}.php à la racine WordPress : ${wpRoot}
+
+ÉTAPE 4 — Peupler les champs via WP-CLI
+  ssh ${sshUser}@${sshHost}
+  cd ${wpRoot}
+  wp eval-file populate-${slug}.php
+
+  En cas d'échec de connexion SSH ("Cannot access install"), vérifier dans
+  my.wpengine.com que la clé SSH est bien associée à CET install précis.
+
+ÉTAPE 5 — Vérifier le rendu
+  Ouvrir la page publiée et comparer avec l'aperçu de l'éditeur.
+  Vérifier en particulier : images, prix, bouton d'achat (cta_url).
+
+ÉTAPE 6 — Traduction WPML (si le site est multilingue)
+  1. WPML > Réglages > Traduction de champs personnalisés :
+     vérifier que cta_url est en "Traduire" (chaque langue a sa propre URL SendOwl),
+     les autres champs peuvent rester en "Copier" sauf besoin spécifique.
+  2. Pages > cliquer sur le crayon sous chaque langue à traduire (jamais la
+     traduction automatique en masse).
+  3. Pour chaque langue, renseigner notamment cta_url avec l'URL SendOwl
+     correspondante.
+  4. Si un champ récemment passé en "Traduire" n'apparaît pas dans l'éditeur
+     de traduction : ouvrir directement la page traduite dans l'éditeur
+     WordPress standard (Pages > titre traduit > Modifier) et le renseigner
+     là — tous les champs ACF s'y affichent normalement.
+
+CHECKLIST FINALE
+  [ ] Contenu relu (pas de texte "lorem" oublié)
+  [ ] Toutes les images s'affichent
+  [ ] cta_price et cta_url corrects pour chaque langue publiée
+  [ ] Boutons "Obtenir le guide" (nav + hero + CTA final) renvoient vers SendOwl
+  [ ] Liens CGV / Mentions légales / Contact fonctionnels
+  [ ] Cache WP Engine purgé après la dernière modification
+`;
+}
+
+function downloadBlob(filename, blob) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ---- Minimal ZIP writer (store method, no compression, no deps) ---- */
+
+const CRC_TABLE = (() => {
+  const table = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) {
+    let c = n;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    table[n] = c >>> 0;
+  }
+  return table;
+})();
+
+function crc32(bytes) {
+  let crc = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) {
+    crc = CRC_TABLE[(crc ^ bytes[i]) & 0xFF] ^ (crc >>> 8);
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function buildZip(files) {
+  // files: [{ name: string, bytes: Uint8Array }]
+  const encoder = new TextEncoder();
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+
+  files.forEach(file => {
+    const nameBytes = encoder.encode(file.name);
+    const crc = crc32(file.bytes);
+    const size = file.bytes.length;
+
+    const localHeader = new Uint8Array(30 + nameBytes.length);
+    const lv = new DataView(localHeader.buffer);
+    lv.setUint32(0, 0x04034b50, true);
+    lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0, true);
+    lv.setUint16(8, 0, true);
+    lv.setUint16(10, 0, true);
+    lv.setUint16(12, 0, true);
+    lv.setUint32(14, crc, true);
+    lv.setUint32(18, size, true);
+    lv.setUint32(22, size, true);
+    lv.setUint16(26, nameBytes.length, true);
+    lv.setUint16(28, 0, true);
+    localHeader.set(nameBytes, 30);
+
+    localParts.push(localHeader, file.bytes);
+
+    const centralHeader = new Uint8Array(46 + nameBytes.length);
+    const cv = new DataView(centralHeader.buffer);
+    cv.setUint32(0, 0x02014b50, true);
+    cv.setUint16(4, 20, true);
+    cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0, true);
+    cv.setUint16(10, 0, true);
+    cv.setUint16(12, 0, true);
+    cv.setUint16(14, 0, true);
+    cv.setUint32(16, crc, true);
+    cv.setUint32(20, size, true);
+    cv.setUint32(24, size, true);
+    cv.setUint16(28, nameBytes.length, true);
+    cv.setUint16(30, 0, true);
+    cv.setUint16(32, 0, true);
+    cv.setUint16(34, 0, true);
+    cv.setUint16(36, 0, true);
+    cv.setUint32(38, 0, true);
+    cv.setUint32(42, offset, true);
+    centralHeader.set(nameBytes, 46);
+    centralParts.push(centralHeader);
+
+    offset += localHeader.length + file.bytes.length;
+  });
+
+  const centralSize = centralParts.reduce((a, p) => a + p.length, 0);
+  const centralOffset = offset;
+
+  const endRecord = new Uint8Array(22);
+  const ev = new DataView(endRecord.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(4, 0, true);
+  ev.setUint16(6, 0, true);
+  ev.setUint16(8, files.length, true);
+  ev.setUint16(10, files.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, centralOffset, true);
+  ev.setUint16(20, 0, true);
+
+  return new Blob([...localParts, ...centralParts, endRecord], { type: 'application/zip' });
+}
+
+document.getElementById('export-btn').onclick = async () => {
+  const slug = data.project_slug || currentSlug || 'destination';
+  const imgMap = buildImagesMap(slug);
+  const encoder = new TextEncoder();
+  const statusEl = document.getElementById('export-status');
+
+  const files = [
+    { name: `populate-${slug}.php`, bytes: encoder.encode(buildPopulatePhp()) },
+    { name: `DEPLOIEMENT-${slug}.txt`, bytes: encoder.encode(buildDeploymentGuide()) },
+  ];
+
+  const entries = Object.entries(imgMap);
+  for (let i = 0; i < entries.length; i++) {
+    const [, v] = entries[i];
+    statusEl.textContent = `Préparation des images (${i + 1}/${entries.length})...`;
+    try {
+      const res = await fetch(v.original.url);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      files.push({ name: `assets/${v.filename}`, bytes });
+    } catch (e) {
+      console.error(`Impossible de récupérer l'image ${v.filename}`, e);
+    }
+  }
+
+  downloadBlob(`livraison-${slug}.zip`, buildZip(files));
+  statusEl.textContent =
+    `livraison-${slug}.zip téléchargé — ${entries.length} image(s) dans le dossier assets/ du zip, prêtes à glisser sur le serveur.`;
+};
+
+/* ---------------- Publication directe (API REST WordPress + ACF) ---------------- */
+
+function basicAuthHeader(username, appPassword) {
+  return 'Basic ' + btoa(`${username}:${appPassword}`);
+}
+
+function guessMime(filename) {
+  const ext = (filename.match(/\.([a-z0-9]+)$/i) || [, 'png'])[1].toLowerCase();
+  const map = { jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png', gif: 'image/gif', webp: 'image/webp' };
+  return map[ext] || 'application/octet-stream';
+}
+
+async function wpFetch(siteUrl, path, authHeader, opts = {}) {
+  const res = await fetch(`${siteUrl}${path}`, {
+    ...opts,
+    headers: { Authorization: authHeader, ...(opts.headers || {}) },
+  });
+  let json = null;
+  try { json = await res.json(); } catch (e) { /* réponse non-JSON */ }
+  if (!res.ok) {
+    const msg = json?.message || `${res.status} ${res.statusText}`;
+    throw new Error(msg);
+  }
+  return json;
+}
+
+async function findPageId(siteUrl, slug, authHeader) {
+  const results = await wpFetch(
+    siteUrl,
+    `/wp-json/wp/v2/pages?search=${encodeURIComponent(slug)}&per_page=50&status=publish,future,draft,pending,private&context=edit`,
+    authHeader
+  );
+  const match = (results || []).find(p => {
+    const tpl = typeof p.template === 'string' ? p.template : '';
+    return tpl.includes('page-landing-guide.php') &&
+      (p.slug.includes(slug) || (p.title?.raw || p.title?.rendered || '').toLowerCase().includes(slug));
+  });
+  if (match) return match.id;
+  // repli : premier résultat utilisant le bon template, même sans correspondance de slug
+  const fallback = (results || []).find(p => (p.template || '').includes('page-landing-guide.php'));
+  return fallback ? fallback.id : null;
+}
+
+async function uploadImage(siteUrl, authHeader, filename, bytes) {
+  const json = await wpFetch(siteUrl, '/wp-json/wp/v2/media', authHeader, {
+    method: 'POST',
+    headers: {
+      'Content-Disposition': `attachment; filename="${filename}"`,
+      'Content-Type': guessMime(filename),
+    },
+    body: bytes,
+  });
+  return { mediaId: json.id, url: json.source_url };
+}
+
+// Envoie une image choisie localement directement dans la médiathèque
+// WordPress du site configuré dans l'onglet PROJET, et ne conserve que le
+// lien (URL + ID média) — jamais le fichier lui-même — pour rester léger
+// côté stockage (Mongo) et éviter toute re-synchronisation manuelle.
+async function uploadImageToSite(file) {
+  const siteUrl = (data.project_site_url || '').replace(/\/+$/, '');
+  const username = data.project_wp_username || '';
+  const appPassword = data.project_wp_app_password || '';
+
+  if (!siteUrl || !username || !appPassword) {
+    alert("Renseigne d'abord l'adresse du site, le nom d'utilisateur et le mot de passe d'application dans l'onglet PROJET pour pouvoir ajouter des images.");
+    return null;
+  }
+
+  try {
+    const authHeader = basicAuthHeader(username, appPassword);
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const { mediaId, url } = await uploadImage(siteUrl, authHeader, file.name, bytes);
+    return { url, mediaId, filename: file.name, siteUrl };
+  } catch (e) {
+    alert(`Échec de l'envoi de l'image vers WordPress : ${e.message}`);
+    return null;
+  }
+}
+
+document.getElementById('publish-btn').onclick = async () => {
+  const slug = data.project_slug || currentSlug || 'destination';
+  const siteUrl = (data.project_site_url || '').replace(/\/+$/, '');
+  const username = data.project_wp_username || '';
+  const appPassword = data.project_wp_app_password || '';
+  const statusEl = document.getElementById('export-status');
+
+  if (!siteUrl || !username || !appPassword) {
+    statusEl.textContent = 'Renseigne l\'adresse du site, le nom d\'utilisateur et le mot de passe d\'application dans l\'onglet PROJET.';
+    return;
+  }
+
+  const authHeader = basicAuthHeader(username, appPassword);
+
+  try {
+    statusEl.textContent = 'Recherche de la page...';
+    const pageId = await findPageId(siteUrl, slug, authHeader);
+    if (!pageId) {
+      statusEl.textContent = `Aucune page "Landing Guide" trouvée pour "${slug}". Crée d'abord la page dans WordPress (Pages > Ajouter, modèle Landing Guide).`;
+      return;
+    }
+
+    const acfPayload = Object.fromEntries(
+      ALL_FIELDS.filter(x => x.type !== IMAGE && !x.name.startsWith('project_')).map(x => [x.name, data[x.name] || ''])
+    );
+
+    // Les images ont déjà été envoyées dans la médiathèque au moment où elles
+    // ont été ajoutées. Si elles pointent vers le site qu'on publie
+    // maintenant, on réutilise directement leur ID média — sinon (image
+    // ajoutée pour un autre site, cas d'une destination dupliquée) on la
+    // retéléverse ici, à partir de son URL d'origine.
+    const imageFieldNames = Object.keys(images);
+    let imgDone = 0;
+    for (const fieldName of imageFieldNames) {
+      const img = images[fieldName];
+      imgDone++;
+      if (img.siteUrl === siteUrl && img.mediaId) {
+        acfPayload[fieldName] = img.mediaId;
+        continue;
+      }
+      statusEl.textContent = `Envoi des images (${imgDone}/${imageFieldNames.length})...`;
+      const res = await fetch(img.url);
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const { mediaId } = await uploadImage(siteUrl, authHeader, img.filename, bytes);
+      acfPayload[fieldName] = mediaId;
+    }
+
+    statusEl.textContent = 'Enregistrement des textes...';
+    await wpFetch(siteUrl, `/wp-json/wp/v2/pages/${pageId}`, authHeader, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ acf: acfPayload }),
+    });
+
+    statusEl.textContent = `Publié avec succès (page #${pageId}) — ${Object.keys(acfPayload).length} champ(s) mis à jour.`;
+  } catch (e) {
+    statusEl.textContent = `Erreur : ${e.message}`;
+  }
+};
+
+/* ---------------- Mode d'emploi (volet repliable) ---------------- */
+
+function esc(str) {
+  return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderGuidePanel() {
+  const body = document.getElementById('guide-body');
+  if (!body) return;
+
+  const slug = data.project_slug || currentSlug || 'destination';
+  const siteUrl = data.project_site_url || '(à compléter dans l\'onglet PROJET)';
+  const sshHost = data.project_ssh_host || '(à compléter)';
+  const sshUser = data.project_ssh_user || '(à compléter)';
+  const wpRoot = data.project_wp_root || '~/sites/xxxxx/';
+  const imgMap = buildImagesMap(slug);
+  const imgCount = Object.keys(imgMap).length;
+  const ready = !!(data.project_site_url && data.project_wp_username && data.project_wp_app_password);
+
+  body.innerHTML = `
+    <div class="guide-step">
+      <div class="guide-step-num">0</div>
+      <div class="guide-step-body">
+        <h4>Prérequis (une seule fois par site)</h4>
+        <ol>
+          <li>Créer la page dans WordPress : Pages &gt; Ajouter, titre + slug clair
+          (ex: guide-${esc(slug)}), puis dans "Attributs de la page" choisir le modèle
+          <strong>Landing Guide</strong>. Publier.</li>
+          <li>Si le template n'a jamais servi sur ce site, importer
+          <code>acf-landing-guide.json</code> dans ACF &gt; Groupes de champs &gt;
+          Importer. Vérifier que "Afficher dans l'API REST" est activé sur ce groupe
+          (déjà coché si le fichier fourni est utilisé tel quel).</li>
+          <li>Générer un mot de passe d'application : dans WordPress, Utilisateurs &gt;
+          Votre profil &gt; tout en bas, section "Mots de passe d'application". Donner
+          un nom, cliquer "Ajouter", copier le mot de passe.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">1</div>
+      <div class="guide-step-body">
+        <h4>Personnaliser le contenu</h4>
+        <p>Parcourir les onglets à gauche (HERO, PIVOT, ... FOOTER) et adapter chaque
+        champ à la destination "<strong>${esc(slug)}</strong>". Le contenu est pré-rempli
+        avec le texte de Tenerife — à réécrire au fur et à mesure.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">2</div>
+      <div class="guide-step-body">
+        <h4>Ajouter les images</h4>
+        <p>Dans chaque champ image, choisir un fichier local — il est envoyé
+        immédiatement dans la médiathèque WordPress du site, et seul le lien est
+        conservé (rien de lourd stocké dans l'éditeur). ${imgCount} image(s)
+        ajoutée(s) pour l'instant.</p>
+        <p class="guide-note">Nécessite d'avoir déjà renseigné l'adresse du site,
+        le nom d'utilisateur et le mot de passe d'application dans l'onglet PROJET
+        (section "Publier en un clic") — sinon un message le rappelle à l'ajout
+        d'une image.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">3</div>
+      <div class="guide-step-body">
+        <h4>Publier</h4>
+        ${ready ? `
+        <p>Onglet PROJET rempli — cliquer sur le bouton vert <strong>"Publier en
+        ligne"</strong> en haut de l'écran. Le contenu et les images sont envoyés
+        directement vers <strong>${esc(siteUrl)}</strong>.</p>
+        ` : `
+        <p>Renseigner dans l'onglet PROJET : l'adresse du site, le nom d'utilisateur
+        et le mot de passe d'application (voir prérequis ci-dessus), puis cliquer sur
+        <strong>"Publier en ligne"</strong>.</p>
+        <p class="guide-note">En cas de blocage (site non compatible, pas d'accès
+        admin...) : bouton "Télécharger le ZIP" en secours — à transmettre à un
+        développeur avec les identifiants SSH ci-dessous.</p>
+        <ol>
+          <li>Décompresser <code>livraison-${esc(slug)}.zip</code></li>
+          <li>Déposer via SFTP les images dans
+          <code>wp-content/themes/genesis-sample/assets/</code>, et
+          <code>populate-${esc(slug)}.php</code> à la racine WordPress
+          (<code>${esc(wpRoot)}</code>)</li>
+          <li>Connexion SSH :<br><code>ssh ${esc(sshUser)}@${esc(sshHost)}</code></li>
+          <li>Exécution :<br><code>cd ${esc(wpRoot)}<br>wp eval-file populate-${esc(slug)}.php</code></li>
+        </ol>
+        `}
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">4</div>
+      <div class="guide-step-body">
+        <h4>Configurer le CTA de vente</h4>
+        <p>Créer le produit sur SendOwl, puis renseigner <strong>cta_price</strong> et
+        <strong>cta_url</strong> (onglet CTA FINAL) avec l'URL de paiement — avant ou
+        après publication, ça reste modifiable.</p>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">5</div>
+      <div class="guide-step-body">
+        <h4>Traduire avec WPML (si site multilingue)</h4>
+        <ol>
+          <li>WPML &gt; Réglages &gt; Traduction de champs personnalisés : vérifier que
+          <strong>cta_url</strong> est en "Traduire" (une URL SendOwl par langue).</li>
+          <li>Pages &gt; cliquer sur le crayon sous chaque langue, une par une — jamais
+          la traduction automatique en masse.</li>
+          <li>Si un champ n'apparaît pas dans l'éditeur de traduction : ouvrir
+          directement la page traduite dans l'éditeur WordPress standard, tous les
+          champs ACF s'y affichent normalement.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="guide-step">
+      <div class="guide-step-num">✓</div>
+      <div class="guide-step-body">
+        <h4>Checklist finale</h4>
+        <ul class="guide-checklist">
+          <li><label><input type="checkbox"> Contenu relu, aucun texte oublié</label></li>
+          <li><label><input type="checkbox"> Toutes les images s'affichent</label></li>
+          <li><label><input type="checkbox"> cta_price et cta_url corrects par langue</label></li>
+          <li><label><input type="checkbox"> Boutons "Obtenir le guide" (nav + hero + CTA) renvoient vers SendOwl</label></li>
+          <li><label><input type="checkbox"> Liens CGV / Mentions légales / Contact fonctionnels</label></li>
+          <li><label><input type="checkbox"> Cache WP Engine purgé</label></li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('guide-toggle').onclick = () => {
+  document.getElementById('guide-panel').classList.toggle('open');
+};
+document.getElementById('guide-close').onclick = () => {
+  document.getElementById('guide-panel').classList.remove('open');
+};
+
+/* ---------------- Init ---------------- */
+
+(async function init() {
+  try {
+    const list = await fetchProjectList();
+    projectSlugs = list.map(p => p.slug);
+  } catch (e) {
+    console.error(e);
+    setSyncStatus('Impossible de contacter le serveur — voir la console');
+  }
+  if (projectSlugs.length === 0) projectSlugs = ['tenerife'];
+  await loadProject(projectSlugs[0]);
+})();
+
+</script>
+</body>
+</html>
