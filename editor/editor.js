@@ -1033,6 +1033,21 @@ async function findPageId(siteUrl, slug, authHeader) {
   return fallback ? fallback.id : null;
 }
 
+async function createPage(siteUrl, slug, authHeader) {
+  const title = `Guide ${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
+  const json = await wpFetch(siteUrl, '/wp-json/wp/v2/pages', authHeader, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      title,
+      slug: `guide-${slug}`,
+      status: 'publish',
+      template: 'page-landing-guide.php',
+    }),
+  });
+  return json.id;
+}
+
 async function uploadImage(siteUrl, authHeader, filename, bytes) {
   const json = await wpFetch(siteUrl, '/wp-json/wp/v2/media', authHeader, {
     method: 'POST',
@@ -1086,10 +1101,10 @@ document.getElementById('publish-btn').onclick = async () => {
 
   try {
     statusEl.textContent = 'Recherche de la page...';
-    const pageId = await findPageId(siteUrl, slug, authHeader);
+    let pageId = await findPageId(siteUrl, slug, authHeader);
     if (!pageId) {
-      statusEl.textContent = `Aucune page "Landing Guide" trouvée pour "${slug}". Crée d'abord la page dans WordPress (Pages > Ajouter, modèle Landing Guide).`;
-      return;
+      statusEl.textContent = 'Aucune page existante — création en cours...';
+      pageId = await createPage(siteUrl, slug, authHeader);
     }
 
     const acfPayload = Object.fromEntries(
@@ -1158,9 +1173,6 @@ function renderGuidePanel() {
           <li>Installer le plugin <strong>Advanced Custom Fields</strong> (gratuit) :
           Extensions &gt; Ajouter, rechercher "Advanced Custom Fields", Installer puis
           Activer. À sauter si déjà présent sur ce site.</li>
-          <li>Créer la page dans WordPress : Pages &gt; Ajouter, titre + slug clair
-          (ex: guide-${esc(slug)}), puis dans "Attributs de la page" choisir le modèle
-          <strong>Landing Guide</strong>. Publier.</li>
           <li>Importer le groupe de champs :
           <a href="../acf-landing-guide.json" download class="guide-download">télécharger acf-landing-guide.json</a>,
           puis dans WordPress, ACF &gt; Groupes de champs &gt; Ajouter &gt; Importer un
@@ -1172,6 +1184,9 @@ function renderGuidePanel() {
           Votre profil &gt; tout en bas, section "Mots de passe d'application". Donner
           un nom, cliquer "Ajouter", copier le mot de passe.</li>
         </ol>
+        <p class="guide-note">Pas besoin de créer la page vous-même : "Publier en
+        ligne" la crée automatiquement (titre et modèle Landing Guide) si elle
+        n'existe pas encore pour cette destination.</p>
       </div>
     </div>
 
