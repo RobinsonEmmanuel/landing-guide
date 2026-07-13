@@ -1155,13 +1155,19 @@ function renderGuidePanel() {
       <div class="guide-step-body">
         <h4>Prérequis (une seule fois par site)</h4>
         <ol>
+          <li>Installer le plugin <strong>Advanced Custom Fields</strong> (gratuit) :
+          Extensions &gt; Ajouter, rechercher "Advanced Custom Fields", Installer puis
+          Activer. À sauter si déjà présent sur ce site.</li>
           <li>Créer la page dans WordPress : Pages &gt; Ajouter, titre + slug clair
           (ex: guide-${esc(slug)}), puis dans "Attributs de la page" choisir le modèle
           <strong>Landing Guide</strong>. Publier.</li>
-          <li>Si le template n'a jamais servi sur ce site, importer
-          <code>acf-landing-guide.json</code> dans ACF &gt; Groupes de champs &gt;
-          Importer. Vérifier que "Afficher dans l'API REST" est activé sur ce groupe
-          (déjà coché si le fichier fourni est utilisé tel quel).</li>
+          <li>Importer le groupe de champs :
+          <a href="../acf-landing-guide.json" download class="guide-download">télécharger acf-landing-guide.json</a>,
+          puis dans WordPress, ACF &gt; Groupes de champs &gt; Ajouter &gt; Importer un
+          groupe de champs &gt; sélectionner le fichier téléchargé. Vérifier que
+          "Afficher dans l'API REST" est activé sur ce groupe (déjà coché si le
+          fichier fourni est utilisé tel quel). À sauter si le template a déjà servi
+          sur ce site.</li>
           <li>Générer un mot de passe d'application : dans WordPress, Utilisateurs &gt;
           Votre profil &gt; tout en bas, section "Mots de passe d'application". Donner
           un nom, cliquer "Ajouter", copier le mot de passe.</li>

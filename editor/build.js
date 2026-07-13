@@ -125,6 +125,7 @@ const html = `<!doctype html>
     font-family: 'Courier New', monospace; display: inline-block; line-height: 1.6;
   }
   .guide-note { font-size: 11.5px; color: #8a6200; background: #FBF3DF; padding: 6px 10px; border-radius: 6px; }
+  .guide-download { color: #B68207; font-weight: 700; text-decoration: underline; }
   .guide-checklist { list-style: none; margin: 0; padding: 0; }
   .guide-checklist li { margin-bottom: 8px; font-size: 12.5px; color: #4a5168; }
   .guide-checklist label { display: flex; align-items: center; gap: 8px; cursor: pointer; }

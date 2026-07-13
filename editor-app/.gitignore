@@ -3,4 +3,5 @@ node_modules
 out
 .env.local
 public/landing-editor.html
+public/acf-landing-guide.json
 next-env.d.ts
