@@ -2,8 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const cssRaw = fs.readFileSync('/tmp/extracted-style.css', 'utf8');
-const css = cssRaw.replace(/^<style>\n?/, '').replace(/<\/style>\s*$/, '');
+const templateSource = fs.readFileSync(path.join(ROOT, 'page-landing-guide.php'), 'utf8');
+const styleMatch = templateSource.match(/<style>([\s\S]*?)<\/style>/);
+if (!styleMatch) {
+  throw new Error('Impossible de trouver le bloc <style> dans page-landing-guide.php');
+}
+const css = styleMatch[1];
 
 const previewBody = fs.readFileSync(path.join(__dirname, 'preview-body.html'), 'utf8');
 const editorJs = fs.readFileSync(path.join(__dirname, 'editor.js'), 'utf8');
