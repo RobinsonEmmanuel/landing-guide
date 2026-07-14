@@ -816,22 +816,27 @@ Fichiers générés par l'éditeur (dans ce dossier de téléchargement) :
   - populate-${slug}.php
 ${imgList}
 
-ÉTAPE 1 — Créer la page WordPress
+ÉTAPE 1 — Déposer les fichiers sur le serveur (SFTP)
+  Le thème utilisé sur tous nos sites est "genesis-sample".
+  - Si le template "Landing Guide" n'a jamais servi sur ce site, déposer d'abord
+      page-landing-guide.php
+    dans wp-content/themes/genesis-sample/ (sinon WordPress refuse ce modèle de
+    page avec l'erreur "Paramètre(s) invalide(s) : « template »"). Si déjà en
+    place, passer directement aux fichiers suivants.
+  - Déposer les images listées ci-dessus dans :
+      wp-content/themes/genesis-sample/assets/
+  - Déposer populate-${slug}.php à la racine WordPress : ${wpRoot}
+
+ÉTAPE 2 — Créer la page WordPress
   1. Dans WP Admin (${domain}/wp-admin), Pages > Ajouter.
   2. Titre de la page + slug clair (ex: guide-${slug}).
   3. Dans "Attributs de la page", choisir le modèle "Landing Guide".
   4. Publier.
 
-ÉTAPE 2 — Vérifier le groupe de champs ACF
+ÉTAPE 3 — Vérifier le groupe de champs ACF
   Si le template "Landing Guide" n'a jamais été utilisé sur ce site,
-  importer d'abord acf-landing-guide.json dans ACF > Groupes de champs > Importer.
-  Si déjà en place, passer à l'étape 3.
-
-ÉTAPE 3 — Déposer les fichiers sur le serveur (SFTP)
-  Le thème utilisé sur tous nos sites est "genesis-sample".
-  - Déposer les images listées ci-dessus dans :
-      wp-content/themes/genesis-sample/assets/
-  - Déposer populate-${slug}.php à la racine WordPress : ${wpRoot}
+  importer d'abord acf-landing-guide.json dans ACF > Outils > Importer un JSON.
+  Si déjà en place, passer à l'étape 4.
 
 ÉTAPE 4 — Peupler les champs via WP-CLI
   ssh ${sshUser}@${sshHost}
@@ -1179,6 +1184,13 @@ function renderGuidePanel() {
           <li>Installer le plugin <strong>Advanced Custom Fields</strong> (gratuit) :
           Extensions &gt; Ajouter, rechercher "Advanced Custom Fields", Installer puis
           Activer. À sauter si déjà présent sur ce site.</li>
+          <li>Déposer le fichier de template sur le serveur (SFTP, une seule fois par
+          site) : <a href="../page-landing-guide.php" download class="guide-download">télécharger page-landing-guide.php</a>,
+          puis le déposer dans <code>wp-content/themes/genesis-sample/</code> (le thème
+          utilisé sur tous nos sites). Sans ce fichier, WordPress refuse le modèle de
+          page "Landing Guide" et "Publier en ligne" échoue avec l'erreur
+          <em>Paramètre(s) invalide(s) : « template »</em>. À sauter si le template a
+          déjà servi sur ce site.</li>
           <li>Importer le groupe de champs :
           <a href="../acf-landing-guide.json" download class="guide-download">télécharger acf-landing-guide.json</a>,
           puis dans WordPress, ACF &gt; Outils &gt; Importer un JSON &gt; "Choisir un
@@ -1190,9 +1202,9 @@ function renderGuidePanel() {
           Votre profil &gt; tout en bas, section "Mots de passe d'application". Donner
           un nom, cliquer "Ajouter", copier le mot de passe.</li>
         </ol>
-        <p class="guide-note">Pas besoin de créer la page vous-même : "Publier en
-        ligne" la crée automatiquement (titre et modèle Landing Guide) si elle
-        n'existe pas encore pour cette destination.</p>
+        <p class="guide-note">Une fois le template déposé sur le site, pas besoin de
+        créer la page vous-même : "Publier en ligne" la crée automatiquement (titre et
+        modèle Landing Guide) si elle n'existe pas encore pour cette destination.</p>
       </div>
     </div>
 

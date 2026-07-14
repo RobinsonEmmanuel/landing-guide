@@ -17,5 +17,9 @@ fs.copyFileSync(
   path.join(repoRoot, 'acf-landing-guide.json'),
   path.join(publicDir, 'acf-landing-guide.json')
 );
+fs.copyFileSync(
+  path.join(repoRoot, 'page-landing-guide.php'),
+  path.join(publicDir, 'page-landing-guide.php')
+);
 
-console.log('Synced landing-editor.html and acf-landing-guide.json into public/');
+console.log('Synced landing-editor.html, acf-landing-guide.json and page-landing-guide.php into public/');
