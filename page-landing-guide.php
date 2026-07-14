@@ -1495,7 +1495,7 @@ $pivot_img3 = rl_get_image('pivot_image_3');
     <div class="inspi-layout">
       <div class="inspi-cards">
         <div class="inspi-grid">
-          <?php for ( $i = 1; $i <= 6; $i++ ) : ?>
+          <?php for ( $i = 1; $i <= 12; $i++ ) : ?>
           <?php if ( get_field("inspi_{$i}_title") ) : ?>
           <div class="inspi-card">
             <?php if ( get_field("inspi_{$i}_emoji") ) : ?>

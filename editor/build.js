@@ -50,8 +50,9 @@ const html = `<!doctype html>
   .topbar button { background: rgba(255,255,255,0.12); color: #fff; }
   .topbar button:hover { background: rgba(255,255,255,0.22); }
   .topbar .spacer { flex: 1; }
-  #export-btn { background: #B68207 !important; color: #191E55 !important; font-weight: 700; }
+  #export-btn { background: #B68207 !important; color: #191E55 !important; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
   #export-btn:hover { background: #c8930f !important; }
+  #export-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
   #publish-btn { background: #2e7d32 !important; color: #fff !important; font-weight: 700; }
   #publish-btn:hover { background: #388e3c !important; }
   #export-status { font-size: 12px; color: #CCD3DD; max-width: 320px; }
@@ -152,7 +153,7 @@ const html = `<!doctype html>
   <span id="sync-status" class="sync-status"></span>
   <div class="spacer"></div>
   <span id="export-status"></span>
-  <button id="export-btn">Télécharger le ZIP (fichiers + images)</button>
+  <button id="export-btn" title="Télécharger le ZIP (fichiers + images)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg>ZIP</button>
   <button id="publish-btn">Publier en ligne</button>
 </div>
 

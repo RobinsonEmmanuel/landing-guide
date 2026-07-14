@@ -109,7 +109,7 @@ const SCHEMA = [
         f('inspi_intro', 'Intro (optionnel)', TEXTAREA),
         f('inspi_mockup_image', 'Image mockup smartphone', IMAGE),
       ]),
-      grp('Cartes (6 max)', [1,2,3,4,5,6].flatMap(i => [
+      grp('Cartes (12 max)', Array.from({length:12}, (_,i)=>i+1).flatMap(i => [
         f(`inspi_${i}_emoji`, `Carte ${i} — emoji`),
         f(`inspi_${i}_title`, `Carte ${i} — titre`),
         f(`inspi_${i}_desc`, `Carte ${i} — description`),
