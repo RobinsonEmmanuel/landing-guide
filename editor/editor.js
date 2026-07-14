@@ -37,6 +37,9 @@ const SCHEMA = [
   {
     tab: 'HERO',
     groups: [
+      grp('En-tête (navigation)', [
+        f('header_logo', 'Logo du site (barre de navigation en haut de page)', IMAGE),
+      ]),
       grp('Couverture & titre', [
         f('hero_cover_image', 'Image de couverture du guide', IMAGE),
         f('hero_badge', 'Badge (ex: +15 000 vendus)'),
@@ -523,6 +526,9 @@ function updatePreviewImage(name) {
   });
   const wrapper = doc.querySelector(`[data-hide-if-empty-img="${name}"]`);
   if (wrapper) wrapper.style.display = img ? '' : 'none';
+  doc.querySelectorAll(`[data-show-if-empty-img="${name}"]`).forEach(el => {
+    el.style.display = img ? 'none' : '';
+  });
 }
 
 function refreshWholePreview() {

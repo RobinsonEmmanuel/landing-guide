@@ -7,6 +7,7 @@
 
       { "key": "field_tab_hero", "label": "HERO", "name": "", "type": "tab", "placement": "top", "endpoint": 0 },
 
+      { "key": "field_header_logo", "label": "Logo du site (barre de navigation)", "name": "header_logo", "type": "image", "return_format": "array", "preview_size": "medium", "required": 0 },
       { "key": "field_hero_cover_image", "label": "Image de couverture", "name": "hero_cover_image", "type": "image", "return_format": "array", "preview_size": "medium", "required": 1 },
       { "key": "field_hero_badge", "label": "Badge (ex: +15 000 vendus)", "name": "hero_badge", "type": "text", "required": 0 },
       { "key": "field_hero_kicker", "label": "Kicker (ex: guide numérique · 161 pages)", "name": "hero_kicker", "type": "text", "required": 1 },

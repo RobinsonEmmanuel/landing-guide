@@ -1324,9 +1324,14 @@ function rl_get_image( string $field_name ): ?array {
 <?php wp_body_open(); ?>
 
 <!-- NAV -->
+<?php $header_logo = rl_get_image('header_logo'); ?>
 <nav>
   <a href="#" class="nav-logo">
+    <?php if ( $header_logo ) : ?>
+    <img src="<?php echo esc_url( $header_logo['url'] ); ?>" alt="<?php echo esc_attr( $header_logo['alt'] ?: get_bloginfo('name') ); ?>" class="nav-logo-img" width="340" height="44" loading="eager" decoding="async">
+    <?php else : ?>
     <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/logo-canarias-lovers.png' ); ?>" alt="Canarias Lovers" class="nav-logo-img" width="340" height="44" loading="eager" decoding="async">
+    <?php endif; ?>
   </a>
   <a href="<?php the_field('cta_url'); ?>" class="nav-cta"><?php the_field('hero_cta_primary'); ?></a>
 </nav>

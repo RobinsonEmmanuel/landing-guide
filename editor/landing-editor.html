@@ -1435,7 +1435,8 @@ body{padding-top:0;}
 img:not([src]){visibility:hidden;}
 </style></head><body><nav>
   <a class=&quot;nav-logo&quot; href=&quot;#&quot;>
-    <span style=&quot;color:#fff;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:.04em;&quot;>LOGO SITE</span>
+    <img data-field-img=&quot;header_logo&quot; data-hide-if-empty-img=&quot;header_logo&quot; class=&quot;nav-logo-img&quot; alt=&quot;&quot; style=&quot;display:none;&quot;>
+    <span data-show-if-empty-img=&quot;header_logo&quot; style=&quot;color:#fff;font-family:'Raleway',sans-serif;font-weight:800;letter-spacing:.04em;&quot;>LOGO SITE</span>
   </a>
   <a href=&quot;#&quot; class=&quot;nav-cta&quot; data-field-text=&quot;hero_cta_primary&quot;>Obtenir le guide →</a>
 </nav>
@@ -1825,6 +1826,9 @@ const SCHEMA = [
   {
     tab: 'HERO',
     groups: [
+      grp('En-tête (navigation)', [
+        f('header_logo', 'Logo du site (barre de navigation en haut de page)', IMAGE),
+      ]),
       grp('Couverture & titre', [
         f('hero_cover_image', 'Image de couverture du guide', IMAGE),
         f('hero_badge', 'Badge (ex: +15 000 vendus)'),
@@ -2311,6 +2315,9 @@ function updatePreviewImage(name) {
   });
   const wrapper = doc.querySelector(`[data-hide-if-empty-img="${name}"]`);
   if (wrapper) wrapper.style.display = img ? '' : 'none';
+  doc.querySelectorAll(`[data-show-if-empty-img="${name}"]`).forEach(el => {
+    el.style.display = img ? 'none' : '';
+  });
 }
 
 function refreshWholePreview() {
