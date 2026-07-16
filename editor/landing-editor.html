@@ -2641,12 +2641,19 @@ ${imgList}
 
 ÉTAPE 6 — Traduction WPML (si le site est multilingue)
   1. WPML > Réglages > Traduction de champs personnalisés :
-     vérifier que cta_url est en "Traduire" (chaque langue a sa propre URL SendOwl),
-     les autres champs peuvent rester en "Copier" sauf besoin spécifique.
+     - cta_url doit être en "Traduire" (chaque langue a sa propre URL SendOwl).
+     - Tous les champs image (hero_cover_image, pivot_image_1/2/3,
+       feuilletage_image_1 à 6, inspi_mockup_image, eng_portrait, header_logo)
+       sont en "Copier" par défaut. En "Copier", WordPress affiche TOUJOURS
+       l'image de la langue source (FR) sur les traductions, même si on en
+       choisit une autre dans l'éditeur de traduction — passer en "Traduire"
+       chaque champ image qu'on veut faire varier par langue.
+     - Les autres champs (textes) peuvent rester en "Copier" sauf besoin
+       spécifique.
   2. Pages > cliquer sur le crayon sous chaque langue à traduire (jamais la
      traduction automatique en masse).
   3. Pour chaque langue, renseigner notamment cta_url avec l'URL SendOwl
-     correspondante.
+     correspondante, et les images concernées.
   4. Si un champ récemment passé en "Traduire" n'apparaît pas dans l'éditeur
      de traduction : ouvrir directement la page traduite dans l'éditeur
      WordPress standard (Pages > titre traduit > Modifier) et le renseigner
@@ -3067,6 +3074,12 @@ function renderGuidePanel() {
         <ol>
           <li>WPML &gt; Réglages &gt; Traduction de champs personnalisés : vérifier que
           <strong>cta_url</strong> est en "Traduire" (une URL SendOwl par langue).</li>
+          <li>Tous les champs image (couverture, pivot, feuilletage, mockup,
+          portrait, logo du site...) sont en "Copier" par défaut. En "Copier",
+          WordPress affiche toujours l'image de la langue source (FR) sur les
+          traductions, même si on en choisit une autre dans l'éditeur de
+          traduction. Pour faire varier une image par langue, passer son champ
+          en "Traduire" dans ce même réglage.</li>
           <li>Pages &gt; cliquer sur le crayon sous chaque langue, une par une — jamais
           la traduction automatique en masse.</li>
           <li>Si un champ n'apparaît pas dans l'éditeur de traduction : ouvrir
