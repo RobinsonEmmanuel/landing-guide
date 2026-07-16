@@ -13,14 +13,9 @@
  * actuellement affichée (WPML > Traduction des médias), c'est cette
  * variante qui est utilisée à la place de l'image d'origine.
  */
-$rl_image_debug = [];
 function rl_get_image( string $field_name ): ?array {
-	global $rl_image_debug;
 	$img = get_field( $field_name );
-	if ( ! $img ) {
-		$rl_image_debug[] = [ 'field' => $field_name, 'raw' => null, 'attachment_id' => null, 'translated_id' => null, 'result_url' => null ];
-		return null;
-	}
+	if ( ! $img ) return null;
 
 	$attachment_id = null;
 	if ( is_array( $img ) && isset( $img['ID'] ) ) {
@@ -29,7 +24,6 @@ function rl_get_image( string $field_name ): ?array {
 		$attachment_id = (int) $img;
 	}
 
-	$translated_id = null;
 	if ( $attachment_id && has_filter( 'wpml_object_id' ) ) {
 		$translated_id = apply_filters( 'wpml_object_id', $attachment_id, 'attachment', true );
 		if ( $translated_id && (int) $translated_id !== $attachment_id ) {
@@ -37,25 +31,13 @@ function rl_get_image( string $field_name ): ?array {
 		}
 	}
 
-	$result = null;
-	if ( is_array( $img ) ) {
-		$result = $img;
-	} elseif ( is_numeric( $img ) ) {
+	if ( is_array( $img ) ) return $img;
+	if ( is_numeric( $img ) ) {
 		$url = wp_get_attachment_url( (int) $img );
 		$alt = get_post_meta( (int) $img, '_wp_attachment_image_alt', true );
-		$result = $url ? [ 'url' => $url, 'alt' => (string) $alt ] : null;
-	} else {
-		$result = [ 'url' => (string) $img, 'alt' => '' ];
+		return $url ? [ 'url' => $url, 'alt' => (string) $alt ] : null;
 	}
-
-	$rl_image_debug[] = [
-		'field'         => $field_name,
-		'raw'           => $img,
-		'attachment_id' => $attachment_id,
-		'translated_id' => $translated_id,
-		'result_url'    => $result['url'] ?? null,
-	];
-	return $result;
+	return [ 'url' => (string) $img, 'alt' => '' ];
 }
 ?><!DOCTYPE html>
 <html <?php language_attributes(); ?>>
@@ -1749,22 +1731,6 @@ $pivot_img3 = rl_get_image('pivot_image_3');
   });
 </script>
 
-<?php if ( isset( $_GET['rl_debug_images'] ) ) : ?>
-<script>alert('page-landing-guide.php (version debug images) chargé le <?php echo esc_js( date( 'd/m/Y à H:i:s' ) ); ?> — si vous voyez cette alerte, le fichier déployé sur le serveur est bien à jour.');</script>
-<pre style="position:relative;z-index:9999;background:#111;color:#0f0;padding:16px;font-size:12px;line-height:1.6;white-space:pre-wrap;overflow:auto;max-height:480px;border-top:4px solid #B68207;">
-<?php
-global $rl_image_debug;
-echo 'Langue courante (WPML) : ' . esc_html( apply_filters( 'wpml_current_language', 'n/a' ) ) . "\n";
-echo "wpml_object_id enregistré : " . ( has_filter( 'wpml_object_id' ) ? 'oui' : 'NON — WPML absent ou pas encore chargé' ) . "\n\n";
-foreach ( $rl_image_debug as $d ) {
-	echo esc_html( $d['field'] ) . " :\n";
-	echo "  ID attachement lu sur cette page = " . var_export( $d['attachment_id'], true ) . "\n";
-	echo "  wpml_object_id() renvoie         = " . var_export( $d['translated_id'], true ) . "\n";
-	echo "  URL finale affichée              = " . var_export( $d['result_url'], true ) . "\n\n";
-}
-?>
-</pre>
-<?php endif; ?>
 <?php wp_footer(); ?>
 </body>
 </html>
