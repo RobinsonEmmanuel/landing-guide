@@ -855,20 +855,27 @@ ${imgList}
      - cta_url doit être en "Traduire" (chaque langue a sa propre URL SendOwl).
      - Tous les champs image (hero_cover_image, pivot_image_1/2/3,
        feuilletage_image_1 à 6, inspi_mockup_image, eng_portrait, header_logo)
-       sont en "Copier" par défaut. En "Copier", WordPress affiche TOUJOURS
-       l'image de la langue source (FR) sur les traductions, même si on en
-       choisit une autre dans l'éditeur de traduction — passer en "Traduire"
-       chaque champ image qu'on veut faire varier par langue.
+       doivent RESTER en "Copier" (réglage par défaut) — ne pas les passer en
+       "Traduire". Le template (page-landing-guide.php > rl_get_image())
+       résout lui-même la bonne variante par langue via le filtre WPML
+       wpml_object_id, à condition que le média ait été traduit (voir étape
+       suivante).
      - Les autres champs (textes) peuvent rester en "Copier" sauf besoin
        spécifique.
-  2. Pages > cliquer sur le crayon sous chaque langue à traduire (jamais la
+  2. Traduire les médias : Médias > ouvrir chaque image utilisée dans le
+     guide > onglet de traduction WPML de la pièce jointe > ajouter la
+     variante pour chaque langue. Le champ ACF garde une seule référence
+     (l'image FR) ; c'est cette table de traduction de médias que le
+     template consulte pour choisir la bonne image selon la langue de la
+     page affichée.
+  3. Pages > cliquer sur le crayon sous chaque langue à traduire (jamais la
      traduction automatique en masse).
-  3. Pour chaque langue, renseigner notamment cta_url avec l'URL SendOwl
-     correspondante, et les images concernées.
-  4. Si un champ récemment passé en "Traduire" n'apparaît pas dans l'éditeur
-     de traduction : ouvrir directement la page traduite dans l'éditeur
-     WordPress standard (Pages > titre traduit > Modifier) et le renseigner
-     là — tous les champs ACF s'y affichent normalement.
+  4. Pour chaque langue, renseigner notamment cta_url avec l'URL SendOwl
+     correspondante.
+  5. Si un champ texte n'apparaît pas dans l'éditeur de traduction : ouvrir
+     directement la page traduite dans l'éditeur WordPress standard (Pages >
+     titre traduit > Modifier) et le renseigner là — tous les champs ACF s'y
+     affichent normalement.
 
 CHECKLIST FINALE
   [ ] Contenu relu (pas de texte "lorem" oublié)
@@ -1285,15 +1292,17 @@ function renderGuidePanel() {
         <ol>
           <li>WPML &gt; Réglages &gt; Traduction de champs personnalisés : vérifier que
           <strong>cta_url</strong> est en "Traduire" (une URL SendOwl par langue).</li>
-          <li>Tous les champs image (couverture, pivot, feuilletage, mockup,
-          portrait, logo du site...) sont en "Copier" par défaut. En "Copier",
-          WordPress affiche toujours l'image de la langue source (FR) sur les
-          traductions, même si on en choisit une autre dans l'éditeur de
-          traduction. Pour faire varier une image par langue, passer son champ
-          en "Traduire" dans ce même réglage.</li>
+          <li>Tous les champs image (couverture, pivot, feuilletage, mockup, portrait,
+          logo du site...) doivent rester en <strong>"Copier"</strong> (réglage par
+          défaut) — ne pas les passer en "Traduire". Le template résout lui-même la
+          bonne variante par langue via la <strong>traduction de médias</strong> de
+          WPML : ouvrir l'image dans Médias, la traduire pour chaque langue depuis
+          l'onglet de traduction WPML de la pièce jointe. Le champ ACF garde une
+          seule référence (l'image FR), mais le site affichera automatiquement la
+          traduction du média correspondant à la langue de la page consultée.</li>
           <li>Pages &gt; cliquer sur le crayon sous chaque langue, une par une — jamais
           la traduction automatique en masse.</li>
-          <li>Si un champ n'apparaît pas dans l'éditeur de traduction : ouvrir
+          <li>Si un champ texte n'apparaît pas dans l'éditeur de traduction : ouvrir
           directement la page traduite dans l'éditeur WordPress standard, tous les
           champs ACF s'y affichent normalement.</li>
         </ol>

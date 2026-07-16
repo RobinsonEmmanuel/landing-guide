@@ -6,13 +6,31 @@
 
 /**
  * Normalise un champ ACF image quel que soit ce que retourne get_field() :
- * - tableau ACF standard ['url', 'alt', ...]
+ * - tableau ACF standard ['ID', 'url', 'alt', ...]
  * - ID d'attachement (int ou string) — cas fréquent quand WPML copie le champ
  * - URL directe (string)
+ * Si WPML est actif et qu'une traduction du média existe pour la langue
+ * actuellement affichée (WPML > Traduction des médias), c'est cette
+ * variante qui est utilisée à la place de l'image d'origine.
  */
 function rl_get_image( string $field_name ): ?array {
 	$img = get_field( $field_name );
 	if ( ! $img ) return null;
+
+	$attachment_id = null;
+	if ( is_array( $img ) && isset( $img['ID'] ) ) {
+		$attachment_id = (int) $img['ID'];
+	} elseif ( is_numeric( $img ) ) {
+		$attachment_id = (int) $img;
+	}
+
+	if ( $attachment_id && has_filter( 'wpml_object_id' ) ) {
+		$translated_id = apply_filters( 'wpml_object_id', $attachment_id, 'attachment', true );
+		if ( $translated_id && (int) $translated_id !== $attachment_id ) {
+			$img = (int) $translated_id;
+		}
+	}
+
 	if ( is_array( $img ) ) return $img;
 	if ( is_numeric( $img ) ) {
 		$url = wp_get_attachment_url( (int) $img );
