@@ -1750,6 +1750,7 @@ $pivot_img3 = rl_get_image('pivot_image_3');
 </script>
 
 <?php if ( isset( $_GET['rl_debug_images'] ) && current_user_can( 'manage_options' ) ) : ?>
+<script>alert('page-landing-guide.php (version debug images) chargé le <?php echo esc_js( date( 'd/m/Y à H:i:s' ) ); ?> — si vous voyez cette alerte, le fichier déployé sur le serveur est bien à jour.');</script>
 <pre style="position:relative;z-index:9999;background:#111;color:#0f0;padding:16px;font-size:12px;line-height:1.6;white-space:pre-wrap;overflow:auto;max-height:480px;border-top:4px solid #B68207;">
 <?php
 global $rl_image_debug;
