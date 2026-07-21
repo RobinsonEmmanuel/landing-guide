@@ -46,10 +46,15 @@ function rl_get_image( string $field_name ): ?array {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?php wp_title( '|', true, 'right' ); ?><?php bloginfo( 'name' ); ?></title>
 <?php
-// Fournit la meta description à Yoast SEO (au lieu d'une balise <meta> en
-// dur, pour éviter un doublon avec celle que Yoast génère lui-même via
-// wp_head() — Yoast garde ainsi la main sur le SEO, l'Open Graph, etc.
+// Fournit une meta description par défaut à Yoast SEO (au lieu d'une balise
+// <meta> en dur, pour éviter un doublon avec celle que Yoast génère
+// lui-même via wp_head()). Ne s'applique que si aucune description n'a été
+// saisie manuellement dans l'encart Yoast de la page — une description
+// personnalisée reste toujours prioritaire.
 add_filter( 'wpseo_metadesc', function ( $description ) {
+	if ( trim( (string) $description ) !== '' ) {
+		return $description;
+	}
 	$rl_place_count = get_field( 'hero_stat_1_num' );
 	return $rl_place_count
 		? sprintf( 'Découvrez notre guide numérique : %s lieux sélectionnés, cartes interactives, photos et conseils pour construire un voyage à votre image.', $rl_place_count )
