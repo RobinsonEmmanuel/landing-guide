@@ -4,4 +4,5 @@ out
 .env.local
 public/landing-editor.html
 public/acf-landing-guide.json
+public/page-landing-guide.php
 next-env.d.ts

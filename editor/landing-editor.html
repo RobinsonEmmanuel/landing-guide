@@ -1736,10 +1736,10 @@ img:not([src]){visibility:hidden;}
       <div class=&quot;price-note&quot; data-field-text=&quot;cta_price_note&quot; data-hide-if-empty=&quot;cta_price_note&quot;></div>
       <a href=&quot;#&quot; class=&quot;btn-primary&quot; style=&quot;width:100%;justify-content:center;font-size:15px;padding:17px;&quot; data-field-text=&quot;cta_btn_label&quot;></a>
       <div class=&quot;payment-logos&quot;>
-        <div style=&quot;width:40px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
-        <div style=&quot;width:40px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
-        <div style=&quot;width:68px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
-        <div style=&quot;width:50px;height:26px;background:rgba(255,255,255,.15);border-radius:4px;&quot;></div>
+        <img data-field-img=&quot;payment_logo_amex&quot; alt=&quot;American Express&quot; width=&quot;40&quot; height=&quot;26&quot;>
+        <img data-field-img=&quot;payment_logo_mastercard&quot; alt=&quot;Mastercard&quot; width=&quot;40&quot; height=&quot;26&quot;>
+        <img data-field-img=&quot;payment_logo_paypal&quot; alt=&quot;PayPal&quot; width=&quot;68&quot; height=&quot;26&quot;>
+        <img data-field-img=&quot;payment_logo_visa&quot; alt=&quot;Visa&quot; width=&quot;50&quot; height=&quot;26&quot;>
       </div>
     </div>
     <div class=&quot;cta-reassurances&quot;>
@@ -1954,6 +1954,12 @@ const SCHEMA = [
         f('cta_price_note', 'Note sous le prix'),
         f('cta_btn_label', 'Texte du bouton'),
         f('cta_url', 'URL de vente SendOwl', URL_T),
+      ]),
+      grp('Logos de paiement', [
+        f('payment_logo_amex', 'Logo American Express', IMAGE),
+        f('payment_logo_mastercard', 'Logo Mastercard', IMAGE),
+        f('payment_logo_paypal', 'Logo PayPal', IMAGE),
+        f('payment_logo_visa', 'Logo Visa / CB', IMAGE),
       ]),
       grp('Réassurances (4)', [
         f('cta_reassure_1', 'Ligne 1 gauche (gras)'),

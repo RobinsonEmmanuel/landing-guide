@@ -110,6 +110,10 @@ $images = [
 	'feuilletage_image_6'  => [ 'feuillet-preview-156.png',         'Feuillet — Tenerife au printemps, page 156' ],
 	'inspi_mockup_image'   => [ 'inspi-mockup-smartphone.png',      'Mockup smartphone — Découvertes volcaniques' ],
 	'eng_portrait'         => [ 'claire-manu-region-lovers.png',    'Claire et Manu — co-fondateurs Region Lovers' ],
+	'payment_logo_amex'        => [ 'logo-payment-amex.png',       'Logo paiement — American Express' ],
+	'payment_logo_mastercard'  => [ 'logo-payment-mastercard.png', 'Logo paiement — Mastercard' ],
+	'payment_logo_paypal'      => [ 'logo-payment-paypal.png',     'Logo paiement — PayPal' ],
+	'payment_logo_visa'        => [ 'logo-payment-visa.png',       'Logo paiement — Visa' ],
 ];
 
 $image_ids = [];

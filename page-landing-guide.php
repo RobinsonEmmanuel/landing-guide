@@ -1655,11 +1655,20 @@ $pivot_img3 = rl_get_image('pivot_image_3');
       <a href="<?php the_field('cta_url'); ?>" class="btn-primary" style="width:100%;justify-content:center;font-size:15px;padding:17px;">
         <?php the_field('cta_btn_label'); ?>
       </a>
+      <?php
+      // Repli sur les fichiers du thème tant qu'aucun logo n'a été choisi
+      // dans ACF, pour ne pas casser l'affichage des sites déjà en ligne
+      // pendant la transition vers des champs gérables depuis l'admin.
+      $payment_amex       = rl_get_image( 'payment_logo_amex' );
+      $payment_mastercard = rl_get_image( 'payment_logo_mastercard' );
+      $payment_paypal     = rl_get_image( 'payment_logo_paypal' );
+      $payment_visa       = rl_get_image( 'payment_logo_visa' );
+      ?>
       <div class="payment-logos">
-        <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/logo-payment-amex.png' ); ?>" alt="American Express" width="40" height="26" loading="lazy" decoding="async">
-        <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/logo-payment-mastercard.png' ); ?>" alt="Mastercard" width="40" height="26" loading="lazy" decoding="async">
-        <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/logo-payment-paypal.png' ); ?>" alt="PayPal" width="68" height="26" loading="lazy" decoding="async">
-        <img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/logo-payment-visa.png' ); ?>" alt="Visa" width="50" height="26" loading="lazy" decoding="async">
+        <img src="<?php echo esc_url( $payment_amex ? $payment_amex['url'] : get_stylesheet_directory_uri() . '/assets/logo-payment-amex.png' ); ?>" alt="American Express" width="40" height="26" loading="lazy" decoding="async">
+        <img src="<?php echo esc_url( $payment_mastercard ? $payment_mastercard['url'] : get_stylesheet_directory_uri() . '/assets/logo-payment-mastercard.png' ); ?>" alt="Mastercard" width="40" height="26" loading="lazy" decoding="async">
+        <img src="<?php echo esc_url( $payment_paypal ? $payment_paypal['url'] : get_stylesheet_directory_uri() . '/assets/logo-payment-paypal.png' ); ?>" alt="PayPal" width="68" height="26" loading="lazy" decoding="async">
+        <img src="<?php echo esc_url( $payment_visa ? $payment_visa['url'] : get_stylesheet_directory_uri() . '/assets/logo-payment-visa.png' ); ?>" alt="Visa" width="50" height="26" loading="lazy" decoding="async">
       </div>
     </div>
     <div class="cta-reassurances">

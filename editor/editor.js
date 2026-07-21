@@ -166,6 +166,12 @@ const SCHEMA = [
         f('cta_btn_label', 'Texte du bouton'),
         f('cta_url', 'URL de vente SendOwl', URL_T),
       ]),
+      grp('Logos de paiement', [
+        f('payment_logo_amex', 'Logo American Express', IMAGE),
+        f('payment_logo_mastercard', 'Logo Mastercard', IMAGE),
+        f('payment_logo_paypal', 'Logo PayPal', IMAGE),
+        f('payment_logo_visa', 'Logo Visa / CB', IMAGE),
+      ]),
       grp('Réassurances (4)', [
         f('cta_reassure_1', 'Ligne 1 gauche (gras)'),
         f('cta_reassure_2', 'Ligne 1 droite'),
