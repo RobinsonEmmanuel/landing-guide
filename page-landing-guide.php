@@ -46,12 +46,16 @@ function rl_get_image( string $field_name ): ?array {
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?php wp_title( '|', true, 'right' ); ?><?php bloginfo( 'name' ); ?></title>
 <?php
-$rl_place_count = get_field( 'hero_stat_1_num' );
-$rl_meta_description = $rl_place_count
-	? sprintf( 'Découvrez notre guide numérique : %s lieux sélectionnés, cartes interactives, photos et conseils pour construire un voyage à votre image.', $rl_place_count )
-	: 'Découvrez notre guide numérique : cartes interactives, photos et conseils pour construire un voyage à votre image.';
+// Fournit la meta description à Yoast SEO (au lieu d'une balise <meta> en
+// dur, pour éviter un doublon avec celle que Yoast génère lui-même via
+// wp_head() — Yoast garde ainsi la main sur le SEO, l'Open Graph, etc.
+add_filter( 'wpseo_metadesc', function ( $description ) {
+	$rl_place_count = get_field( 'hero_stat_1_num' );
+	return $rl_place_count
+		? sprintf( 'Découvrez notre guide numérique : %s lieux sélectionnés, cartes interactives, photos et conseils pour construire un voyage à votre image.', $rl_place_count )
+		: 'Découvrez notre guide numérique : cartes interactives, photos et conseils pour construire un voyage à votre image.';
+} );
 ?>
-<meta name="description" content="<?php echo esc_attr( $rl_meta_description ); ?>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Inter:wght@300;400;500;600&family=Meow+Script&display=swap" rel="stylesheet">
 <style>
