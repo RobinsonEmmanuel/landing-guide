@@ -2624,7 +2624,7 @@ ${imgList}
 
 ÉTAPE 2 — Créer la page WordPress
   1. Dans WP Admin (${domain}/wp-admin), Pages > Ajouter.
-  2. Titre de la page + slug clair (ex: guide-${slug}).
+  2. Titre "eBook ${slug}" + slug clair (ex: ebook-${slug}).
   3. Dans "Attributs de la page", choisir le modèle "Landing Guide".
   4. Publier.
 
@@ -2854,13 +2854,13 @@ async function findPageId(siteUrl, slug, authHeader) {
 }
 
 async function createPage(siteUrl, slug, authHeader) {
-  const title = `Guide ${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
+  const title = `eBook ${slug.charAt(0).toUpperCase()}${slug.slice(1)}`;
   const json = await wpFetch(siteUrl, '/wp-json/wp/v2/pages', authHeader, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       title,
-      slug: `guide-${slug}`,
+      slug: `ebook-${slug}`,
       status: 'publish',
       template: 'page-landing-guide.php',
     }),
@@ -2953,10 +2953,16 @@ document.getElementById('publish-btn').onclick = async () => {
     }
 
     statusEl.textContent = 'Enregistrement des textes...';
+    const pagePayload = { acf: acfPayload };
+    if (acfPayload.hero_cover_image) {
+      // Utilise la cover comme photo à la une (illustration principale de la
+      // page WordPress, utile pour le partage sur les réseaux et le SEO).
+      pagePayload.featured_media = acfPayload.hero_cover_image;
+    }
     await wpFetch(siteUrl, `/wp-json/wp/v2/pages/${pageId}`, authHeader, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ acf: acfPayload }),
+      body: JSON.stringify(pagePayload),
     });
 
     statusEl.textContent = `Publié avec succès (page #${pageId}) — ${Object.keys(acfPayload).length} champ(s) mis à jour.`;
