@@ -2837,19 +2837,41 @@ async function wpFetch(siteUrl, path, authHeader, opts = {}) {
 }
 
 async function findPageId(siteUrl, slug, authHeader) {
-  const results = await wpFetch(
-    siteUrl,
-    `/wp-json/wp/v2/pages?search=${encodeURIComponent(slug)}&per_page=50&status=publish,future,draft,pending,private&context=edit`,
-    authHeader
-  );
-  const match = (results || []).find(p => {
+  // On ne s'appuie pas sur le paramètre "search" de l'API (recherche floue
+  // WordPress, peu fiable selon les sites) : on récupère toutes les pages et
+  // on filtre nous-mêmes par modèle + slug/titre, pour éviter de créer un
+  // doublon quand une page existante n'est pas retrouvée.
+  const targetSlug = slug.toLowerCase();
+  let allPages = [];
+  let page = 1;
+  const maxPages = 10; // jusqu'à 1000 pages, largement suffisant
+
+  while (page <= maxPages) {
+    const res = await fetch(
+      `${siteUrl}/wp-json/wp/v2/pages?per_page=100&page=${page}&status=publish,future,draft,pending,private&context=edit`,
+      { headers: { Authorization: authHeader } }
+    );
+    if (!res.ok) {
+      if (page > 1) break; // on a dépassé la dernière page
+      let json = null;
+      try { json = await res.json(); } catch (e) { /* pas de corps JSON */ }
+      throw new Error(json?.message || `${res.status} ${res.statusText}`);
+    }
+    const batch = await res.json();
+    allPages = allPages.concat(batch);
+    const totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
+    if (page >= totalPages || batch.length === 0) break;
+    page++;
+  }
+
+  const match = allPages.find(p => {
     const tpl = typeof p.template === 'string' ? p.template : '';
     return tpl.includes('page-landing-guide.php') &&
-      (p.slug.includes(slug) || (p.title?.raw || p.title?.rendered || '').toLowerCase().includes(slug));
+      (p.slug.toLowerCase().includes(targetSlug) || (p.title?.raw || p.title?.rendered || '').toLowerCase().includes(targetSlug));
   });
   if (match) return match.id;
-  // repli : premier résultat utilisant le bon template, même sans correspondance de slug
-  const fallback = (results || []).find(p => (p.template || '').includes('page-landing-guide.php'));
+  // repli : première page utilisant le bon modèle, même sans correspondance de slug
+  const fallback = allPages.find(p => (p.template || '').includes('page-landing-guide.php'));
   return fallback ? fallback.id : null;
 }
 
